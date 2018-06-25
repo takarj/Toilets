@@ -5,9 +5,9 @@
     android:layout_height="match_parent">
 
     <android.widget.RelativeLayout
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bottom_sheet"
-        app:layout_behaviour="android.support.design.widget.BottomSheetBehavior">
-    </android.widget.RelativeLayout>
+        android:background="@android:color/holo_red_dark"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"></android.widget.RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
