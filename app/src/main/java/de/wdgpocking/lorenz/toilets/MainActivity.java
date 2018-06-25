@@ -53,6 +53,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onClick(View view){
-
+        //show hide ui
     }
+
+    //PERSISTENT BOTTOM SHEETS swipe up
 }
