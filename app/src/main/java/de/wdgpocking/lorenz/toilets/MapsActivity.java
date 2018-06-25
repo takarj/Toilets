@@ -3,6 +3,7 @@ package de.wdgpocking.lorenz.toilets;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.NestedScrollView;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,7 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         setContentView(R.layout.main_layout);
-        View bottomSheet = findViewById(R.id.bottom_sheet);
+        NestedScrollView bottomSheet = findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
