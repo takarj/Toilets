@@ -1,13 +1,9 @@
 package de.wdgpocking.lorenz.toilets;
 
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.widget.NestedScrollView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
-
+import android.support.design.widget.BottomSheetBehavior;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -15,21 +11,23 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnLongClickListener, View.OnClickListener {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
-    private GoogleMap mMap;
+    private GoogleMap map;
     private BottomSheetBehavior sheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.maps_layout);
+        setContentView(R.layout.maps_bottom_sheet_layout);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+        View bottomSheet = findViewById(R.id.bottom_sheet1);
+        sheetBehavior = BottomSheetBehavior.from
+    }
 
     /**
      * Manipulates the map once available.
@@ -42,31 +40,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        LayoutInflater inflater = getLayoutInflater();
-        inflater.inflate(R.layout.main_layout, null);
-        //setContentView(R.layout.main_layout);
-        RelativeLayout bottomSheet = findViewById(R.id.bottom_sheet);
-        sheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        map = googleMap;
     }
 
+
+
+    /**
+     new toilet marker
+     menu from below should pop up --> like in google maps
+     options to give details to the toilet and submit it
+     should always be saved to local database for later use
+    */
     @Override
-    public boolean onLongClick(View view) {
-        //new toilet
-        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        return false;
+    public void onMapLongClick(LatLng latLng) {
+        //TODO
+        MarkerOptions mOpt = new MarkerOptions();
+        map.addMarker(mOpt);
     }
-
-    @Override
-    public void onClick(View view){
-        //show hide ui
-    }
-
-    //PERSISTENT BOTTOM SHEETS swipe up
 }
