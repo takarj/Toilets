@@ -69,6 +69,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
                         .title("Custom Toilet");
+                ToiletInfo tInfo = new ToiletInfo()
+                        .rating(5f);
                 map.addMarker(mOpt);
 
                 hud = true;
