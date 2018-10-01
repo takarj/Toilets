@@ -21,6 +21,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
 
+    private ToiletManager toiletManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,13 +67,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                  should always be saved to local database for later use
                  */
                 //TODO
-                Toast.makeText(getApplicationContext(), "LONG CLICK", Toast.LENGTH_SHORT);
+
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
                         .title("Custom Toilet");
-                ToiletInfo tInfo = new ToiletInfo()
-                        .rating(5f);
-                map.addMarker(mOpt);
+                ToiletInfo tInfo = new ToiletInfo();
+                toiletManager.addToilet(mOpt, tInfo);
 
                 hud = true;
                 sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

@@ -25,4 +25,8 @@ public class ToiletManager {
             map.addMarker(mOpt);
         }
     }
+
+    public ToiletInfo getToiletInfo(MarkerOptions markerOptions){
+        return toilets.get(markerOptions);
+    }
 }
