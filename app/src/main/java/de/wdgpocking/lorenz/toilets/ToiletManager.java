@@ -19,6 +19,7 @@ public class ToiletManager {
     }
 
     public void removeToilet(MarkerOptions markerOptions){
+        //Verbesserung noetig!!!
         toilets.remove(markerOptions);
         map.clear();
         for(MarkerOptions mOpt : toilets.keySet()){
