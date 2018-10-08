@@ -10,9 +10,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap map;
     private BottomSheetBehavior sheetBehavior;
@@ -71,8 +72,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
                         .title("Custom Toilet");
+                Marker marker = map.addMarker(mOpt);
                 ToiletInfo tInfo = new ToiletInfo();
-                toiletManager.addToilet(mOpt, tInfo);
+                toiletManager.addToilet(marker, tInfo);
 
                 hud = true;
                 sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -94,5 +96,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map = googleMap;
         map.setOnMapLongClickListener(onMapLongClickListener);
         map.setOnMapClickListener(onMapClickListener);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //TODO
+        //LOAD ToiletInfo corresponding to Marker
+        ToiletInfo tInfo = toiletManager.getToiletInfo(marker);
+        //Put ToiletInfo into Bottomsheet
+        //pull up bottomsheet
+        return false;
     }
 }

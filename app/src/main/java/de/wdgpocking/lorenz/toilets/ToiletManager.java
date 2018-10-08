@@ -1,33 +1,26 @@
 package de.wdgpocking.lorenz.toilets;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 
 public class ToiletManager {
-    private HashMap<MarkerOptions, ToiletInfo> toilets;
-    private GoogleMap map;
+    private HashMap<Marker, ToiletInfo> toilets;
 
-    public ToiletManager(GoogleMap map){
-        this.map = map;
+    public ToiletManager(){ }
+
+    public void addToilet(Marker marker, ToiletInfo toiletInfo){
+        toilets.put(marker, toiletInfo);
     }
 
-    public void addToilet(MarkerOptions markerOptions, ToiletInfo toiletInfo){
-        map.addMarker(markerOptions);
-        toilets.put(markerOptions, toiletInfo);
+    public void removeToilet(Marker marker){
+        toilets.remove(marker);
+        marker.remove();
     }
 
-    public void removeToilet(MarkerOptions markerOptions){
-        //Verbesserung noetig!!!
-        toilets.remove(markerOptions);
-        map.clear();
-        for(MarkerOptions mOpt : toilets.keySet()){
-            map.addMarker(mOpt);
-        }
-    }
-
-    public ToiletInfo getToiletInfo(MarkerOptions markerOptions){
-        return toilets.get(markerOptions);
+    public ToiletInfo getToiletInfo(Marker marker){
+        return toilets.get(marker);
     }
 }
