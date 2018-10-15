@@ -3,7 +3,8 @@ package de.wdgpocking.lorenz.toilets;
 public class ToiletInfo {
 
     private float rating;
-    private String name;
+    private String description;
+    private float price;
 
     public ToiletInfo(){
     }
@@ -17,8 +18,25 @@ public class ToiletInfo {
         return this;
     }
 
-    public ToiletInfo name(String name){
-        this.name = name;
+    public ToiletInfo price(float price){
+        this.price = price;
         return this;
+    }
+
+    public ToiletInfo description(String description){
+        this.description = description;
+        return this;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public float getPrice() {
+        return price;
     }
 }

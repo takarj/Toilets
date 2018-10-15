@@ -4,6 +4,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +14,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import de.wdgpocking.lorenz.toilets.Database.DatabaseHelper;
+
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap map;
@@ -21,6 +24,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PEEK_HEIGHT_COLLAPSED = 100;
     private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
+    private DatabaseHelper localToilets;
 
     private ToiletManager toiletManager;
 
@@ -32,6 +36,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        toiletManager = new ToiletManager();
+        localToilets = new DatabaseHelper(getApplicationContext());
 
         hud = true;
         View bottomSheet = findViewById(R.id.bottom_sheet1);
@@ -73,11 +80,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         .position(latLng)
                         .title("Custom Toilet");
                 Marker marker = map.addMarker(mOpt);
-                ToiletInfo tInfo = new ToiletInfo();
+                ToiletInfo tInfo = new ToiletInfo()
+                        .rating(5f)
+                        .description("")
+                        .price(0f);
+
                 toiletManager.addToilet(marker, tInfo);
 
-                hud = true;
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                showToiletInfo(marker);
             }
         };
     }
@@ -100,11 +110,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        showToiletInfo(marker);
+        return false;
+    }
+
+    private void showToiletInfo(Marker m){
         //TODO
         //LOAD ToiletInfo corresponding to Marker
-        ToiletInfo tInfo = toiletManager.getToiletInfo(marker);
+        ToiletInfo tInfo = toiletManager.getToiletInfo(m);
         //Put ToiletInfo into Bottomsheet
+        LinearLayout bottomsheet = findViewById(R.id.bottom_sheet_info);
+        //bottomsheet.findViewById()
         //pull up bottomsheet
-        return false;
+        //show hud
+        hud = true;
+
     }
 }
