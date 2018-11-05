@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import de.wdgpocking.lorenz.toilets.Database.FeedReaderContract.FeedEntry;
+import de.wdgpocking.lorenz.toilets.ToiletInfo;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -33,24 +34,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void saveToDatabase(String title, LatLng latlng, String description, float rating, float price){
+    public void saveToDatabase(DatabaseToilet dbt){
+
         SQLiteDatabase db = getWritableDatabase();
 
         //values to save to database
-        double lat = latlng.latitude;
-        double lng = latlng.longitude;
+        double lat = dbt.getLatlng().latitude;
+        double lng = dbt.getLatlng().longitude;
 
         ContentValues values = new ContentValues();
-        values.put(FeedEntry.COLUMN_NAME_TITLE, title);
+        values.put(FeedEntry.COLUMN_NAME_TITLE, dbt.getTitle());
         values.put(FeedEntry.COLUMN_NAME_POSITION_LAT, lat);
         values.put(FeedEntry.COLUMN_NAME_POSITION_LNG, lng);
-        values.put(FeedEntry.COLUMN_NAME_DESCRIPTION, description);
-        values.put(FeedEntry.COLUMN_NAME_RATING, rating);
-        values.put(FeedEntry.COLUMN_NAME_PRICE, price);
+        values.put(FeedEntry.COLUMN_NAME_DESCRIPTION, dbt.getDescription());
+        values.put(FeedEntry.COLUMN_NAME_RATING, dbt.getRating());
+        values.put(FeedEntry.COLUMN_NAME_PRICE, dbt.getPrice());
 
 
         long newRowId = db.insert(FeedEntry.TABLE_NAME, null, values);
 
+        db.close();
+    }
+
+
+    public DatabaseToilet loadFromDatabase(){
+        SQLiteDatabase db = getReadableDatabase();
+        DatabaseToilet dbt = new DatabaseToilet();
+        //TODO
+        db.close();
+
+        return dbt;
     }
 
 
