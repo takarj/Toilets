@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -36,6 +37,33 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //move MyLocationButton to bottom-right
+        View mapView = mapFragment.getView();
+        if (mapView != null &&
+                mapView.findViewById(1) != null) {
+            // Get the button view: mylocationbutton --> id 2
+            //compassButton --> id 5
+            View locationButton = ((View) mapView.findViewById(1).getParent()).findViewById(2);
+
+            // and next place it, on bottom right (as Google Maps app)
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
+                    locationButton.getLayoutParams();
+            // position on right bottom
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, 30, 30);
+
+
+            View compassButton = ((View) mapView.findViewById(1).getParent()).findViewById(5);      //move compassButton
+
+            RelativeLayout.LayoutParams layoutParams2 = (RelativeLayout.LayoutParams)
+                    compassButton.getLayoutParams();
+            // position on left bottom  as compass button is in left column
+            layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            layoutParams2.setMargins(30, 0, 0, 30);
+        }
 
         toiletManager = new ToiletManager();
         localToilets = new DatabaseHelper(getApplicationContext());
