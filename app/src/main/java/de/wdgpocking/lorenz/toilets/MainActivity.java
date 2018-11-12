@@ -1,5 +1,11 @@
 package de.wdgpocking.lorenz.toilets;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.internal.Constants;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -20,6 +28,7 @@ import de.wdgpocking.lorenz.toilets.Database.DatabaseHelper;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap map;
+    protected static final int MY_LOCATION_PERMISSION = 1;
     private BottomSheetBehavior sheetBehavior;
     private boolean hud;
     private static final int PEEK_HEIGHT_COLLAPSED = 100;
@@ -52,7 +61,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // position on right bottom
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams.setMargins(0, 0, 30, 30);
+            layoutParams.setMargins(0, 0, 30, 120);
 
 
             View compassButton = ((View) mapView.findViewById(1).getParent()).findViewById(5);      //move compassButton
@@ -62,7 +71,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // position on left bottom  as compass button is in left column
             layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams2.setMargins(30, 0, 0, 30);
+            layoutParams2.setMargins(30, 0, 0, 120);
         }
 
         toiletManager = new ToiletManager();
@@ -132,8 +141,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+
+            Location location = map.getMyLocation();
+
+            if (location != null) {
+                LatLng myLocation = new LatLng(location.getLatitude(),
+                        location.getLongitude());
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
+                        10));
+            }
+
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_PERMISSION);
+            }
+        }
+
         map.setOnMapLongClickListener(onMapLongClickListener);
         map.setOnMapClickListener(onMapClickListener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_LOCATION_PERMISSION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        map.setMyLocationEnabled(true);
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "We can't help you then", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
     }
 
     @Override
@@ -153,5 +198,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //show hud
         hud = true;
 
+    }
+
+    private void centerMapOnMyLocation() {
+        location = map.getMyLocation();
+
+        if (location != null) {
+            LatLng myLocation = new LatLng(location.getLatitude(),
+                    location.getLongitude());
+        }
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
+                Constants.MAP_ZOOM));
     }
 }
