@@ -9,7 +9,9 @@ import java.util.HashMap;
 public class ToiletManager {
     private HashMap<Marker, ToiletInfo> toilets;
 
-    public ToiletManager(){ }
+    public ToiletManager(){
+        toilets = new HashMap<>();
+    }
 
     public void addToilet(Marker marker, ToiletInfo toiletInfo){
         toilets.put(marker, toiletInfo);

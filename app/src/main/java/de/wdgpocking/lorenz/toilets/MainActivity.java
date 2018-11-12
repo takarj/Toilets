@@ -125,7 +125,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 toiletManager.addToilet(marker, tInfo);
 
-                showToiletInfo(marker);
+                //showToiletInfo(marker);
             }
         };
     }
