@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.internal.Constants;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -143,17 +144,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            googleMap.setMyLocationEnabled(true);
-
-            Location location = map.getMyLocation();
-
-            if (location != null) {
-                LatLng myLocation = new LatLng(location.getLatitude(),
-                        location.getLongitude());
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
-                        10));
-            }
-
+            map.setMyLocationEnabled(true);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_PERMISSION);
@@ -198,16 +189,5 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //show hud
         hud = true;
 
-    }
-
-    private void centerMapOnMyLocation() {
-        location = map.getMyLocation();
-
-        if (location != null) {
-            LatLng myLocation = new LatLng(location.getLatitude(),
-                    location.getLongitude());
-        }
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
-                Constants.MAP_ZOOM));
     }
 }
