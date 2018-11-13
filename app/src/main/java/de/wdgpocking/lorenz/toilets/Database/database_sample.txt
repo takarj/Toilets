@@ -1,0 +1,149 @@
+package de.wdg.lbaier.englischvokabelapp;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DataHandler {
+
+    //String Konstanten fuer Datenbank
+    public static final String DATABASE_NAME = "vocDB";
+    public static final int DATABASE_VERSION = 1;
+
+    //String Konstanten fuer Tabellen und Spalten
+    public static final String TABLE_NAME = "vocTable";
+    public static final String DEUTSCH = "deutsch";
+    public static final String ENGLISCH = "englisch";
+
+    private DataBaseHelper dbHelper;
+    private Context ctx;
+    private SQLiteDatabase db;
+
+    public DataHandler(Context ctx){
+        this.ctx = ctx;
+        dbHelper = new DataBaseHelper(ctx);
+    }
+
+    public void openWrite(){
+        db = dbHelper.getWritableDatabase();
+    }
+
+    public void openRead(){
+        db = dbHelper.getReadableDatabase();
+    }
+
+    public void close(){
+        dbHelper.close();
+    }
+
+    public void addEntry(String ger, String eng){
+        db.execSQL("insert into vocTable (deutsch, englisch) VALUES ('"+ger+"', '"+eng+"');");
+    }
+
+    public int getEntryCount(){
+        int count = 0;
+        Cursor c = db.rawQuery("select count (*) from vocTable;", null);
+        if(c.moveToFirst()){
+            count = Integer.parseInt(c.getString(0));
+        }
+        return count;
+    }
+
+    public String[] getRandomData(){
+        Cursor c = db.rawQuery("select * from vocTable order by random() limit 1;", null);
+        if(c.moveToFirst()){
+            return new String[] {c.getString(0), c.getString(1)};
+        }else{
+            return null;
+        }
+    }
+
+    public ArrayList<String> nachDeutscherBedeutungSortiert(){
+        ArrayList<String> list = new ArrayList<String>();
+        Cursor c = db.rawQuery("select deutsch, englisch from vocTable order by deutsch;", null);
+
+        if(c.moveToFirst()){
+            list.add(c.getString(0) + " - " + c.getString(1));
+
+            while(c.moveToNext()){
+                list.add(c.getString(0) + " - " + c.getString(1));
+            }
+        }
+
+        return list;
+    }
+
+    public ArrayList<String> nachEnglischerBedeutungSortiert(){
+        ArrayList<String> list = new ArrayList<String>();
+
+        Cursor c = db.rawQuery("select deutsch, englisch from vocTable order by englisch;", null);
+
+        if(c.moveToFirst()){
+            list.add(c.getString(1) +" - " + c.getString(0));
+
+            while(c.moveToNext()){
+                list.add(c.getString(1) +" - " + c.getString(0));
+            }
+        }
+
+        return list;
+    }
+
+    public String[] getVocByPositionDeutsch(int pos){
+        String[] voc = new String[2];
+
+        Cursor c = db.rawQuery("select deutsch, englisch from vocTable order by deutsch;", null);
+
+        if(c.moveToPosition(pos)){
+            voc[0] = c.getString(0);
+            voc[1] = c.getString(1);
+            return voc;
+        }else{
+            return null;
+        }
+    }
+
+    public String[] getVocByPositionEnglisch(int pos){
+        String[] voc = new String[2];
+
+        Cursor c = db.rawQuery("select deutsch, englisch from vocTable order by englisch;", null);
+
+        if(c.moveToPosition(pos)){
+            voc[0] = c.getString(0);
+            voc[1] = c.getString(1);
+            return voc;
+        }else{
+            return null;
+        }
+    }
+
+    public void deleteVoc(String deutscheBed, String englischeBed){
+        db.execSQL("delete from vocTable where deutsch = '"+deutscheBed+"' and englisch = '"+englischeBed+"';");
+    }
+
+    public void updateVoc(String altDe, String altEn, String neuDe, String neuEn){
+        db.execSQL("update vocTable set deutsch = '"+neuDe+"', englisch = '"+neuEn+"' where deutsch = '"+altDe+"' and englisch = '"+altEn+"';");
+    }
+
+
+    private static class DataBaseHelper extends SQLiteOpenHelper{
+
+        public DataBaseHelper(Context ctx){
+            super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db){
+            db.execSQL("create table if not exists vocTable(deutsch text not null, englisch text not null);");
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+            //TODO
+        }
+    }
+}

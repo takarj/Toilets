@@ -2,6 +2,8 @@ package de.wdgpocking.lorenz.toilets;
 
 public class ToiletInfo {
 
+    private int ID;
+
     private float rating;
     private String description;
     private float price;
@@ -38,5 +40,14 @@ public class ToiletInfo {
 
     public float getPrice() {
         return price;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public ToiletInfo setID(int ID) {
+        this.ID = ID;
+        return this;
     }
 }

@@ -3,6 +3,9 @@ package de.wdgpocking.lorenz.toilets.Database;
 import com.google.android.gms.maps.model.LatLng;
 
 public class DatabaseToilet {
+
+    private int ID;
+
     private String title;
     private LatLng latlng;
     private String description;
@@ -54,6 +57,15 @@ public class DatabaseToilet {
 
     public DatabaseToilet setPrice(float price) {
         this.price = price;
+        return this;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public DatabaseToilet setID(int ID) {
+        this.ID = ID;
         return this;
     }
 }
