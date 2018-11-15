@@ -44,6 +44,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private Button edit;
     private EditText beschreibung;
     private EditText name;
+    private EditText preis;
     private ToiletManager toiletManager;
 
 
@@ -98,6 +99,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         edit= (Button)findViewById(R.id.Editbtn);
         beschreibung= (EditText)findViewById(R.id.Beschreibungtxt);
         name=(EditText)findViewById(R.id.Nametxt);
+        preis= (EditText) findViewById(R.id.Preistxt);
 
 
         onMapClickListener = new GoogleMap.OnMapClickListener() {
@@ -209,14 +211,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void setEditable (View v){
         EditText name = findViewById(R.id.Nametxt);
         EditText beschreibung = findViewById(R.id.Beschreibungtxt);
+        EditText preis = findViewById(R.id.Preistxt);
         name.setEnabled(true);
         beschreibung.setEnabled(true);
+        preis.setEnabled(true);
     }
     private void setUneditable (View v) {
         EditText name = findViewById(R.id.Nametxt);
         EditText beschreibung = findViewById(R.id.Beschreibungtxt);
+        EditText preis = findViewById(R.id.Preistxt);
         beschreibung.setEnabled(false);
         name.setEnabled(false);
+        preis.setEnabled(false);
+
     }
     }
 }
