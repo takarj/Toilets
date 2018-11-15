@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -36,8 +38,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
     private DatabaseHelper localToilets;
-
+    private Button save;
+    private Button delete;
+    private Button route;
+    private Button edit;
+    private EditText beschreibung;
+    private EditText name;
     private ToiletManager toiletManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +92,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         sheetBehavior.setPeekHeight(PEEK_HEIGHT_COLLAPSED);
+        save=(Button)findViewById(R.id.Savebtn);
+        delete= (Button)findViewById(R.id.Deletebtn);
+        route= (Button)findViewById(R.id.Routebtn);
+        edit= (Button)findViewById(R.id.Editbtn);
+        beschreibung= (EditText)findViewById(R.id.Beschreibungtxt);
+        name=(EditText)findViewById(R.id.Nametxt);
+
 
         onMapClickListener = new GoogleMap.OnMapClickListener() {
             /**
@@ -189,5 +205,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //show hud
         hud = true;
 
+    }
+    private void setEditable (View v){
+        EditText name = findViewById(R.id.Nametxt);
+        EditText beschreibung = findViewById(R.id.Beschreibungtxt);
+        name.setEnabled(true);
+        beschreibung.setEnabled(true);
+    }
+    private void setUneditable (View v) {
+        EditText name = findViewById(R.id.Nametxt);
+        EditText beschreibung = findViewById(R.id.Beschreibungtxt);
+        beschreibung.setEnabled(false);
+        name.setEnabled(false);
+    }
     }
 }
