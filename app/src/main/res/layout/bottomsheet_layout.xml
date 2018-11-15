@@ -28,8 +28,8 @@
 
             <Button
                 android:id="@+id/Savebtn"
-                android:layout_width="76dp"
-                android:layout_height="81dp"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
                 android:layout_weight=""
                 android:text="Save" />
 
@@ -41,8 +41,8 @@
 
             <Button
                 android:id="@+id/Deletebtn"
-                android:layout_width="76dp"
-                android:layout_height="81dp"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
                 android:layout_weight=""
                 android:text="Delete" />
 
@@ -54,8 +54,8 @@
 
             <Button
                 android:id="@+id/Routebtn"
-                android:layout_width="76dp"
-                android:layout_height="81dp"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
                 android:layout_weight=""
                 android:text="Route" />
 
@@ -65,40 +65,60 @@
                 android:layout_weight="1" >
             </Space>
         </LinearLayout>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1" >
+        </Space>
 
         <EditText
             android:id="@+id/Nametxt"
             android:layout_width="317dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="Name"
-            android:layout_gravity="center"/>
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:hint="Name" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:layout_weight="1" >
+        </Space>
 
         <EditText
             android:id="@+id/Beschreibungtxt"
             android:layout_width="317dp"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:hint = "Beschreibung"
-            android:gravity="center"
             android:layout_gravity="center"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="15dp"
+            android:layout_weight="1" >
+        </Space>
+
         <EditText
             android:id="@+id/Preistxt"
             android:layout_width="317dp"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:hint = "Preis"
-            android:gravity="center"
             android:layout_gravity="center" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"></Space>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="288dp"
             android:orientation="horizontal">
+
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
+                android:layout_weight="1"></Space>
 
             <Button
                 android:id="@+id/Editbtn"
@@ -110,8 +130,7 @@
             <Space
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
+                android:layout_weight="1"></Space>
         </LinearLayout>
 
     </LinearLayout>
