@@ -105,6 +105,14 @@
             android:layout_gravity="center"
             android:text="Edit" />
 
+        <Button
+            android:id="@+id/confirmBtn"
+            android:onClick="confirmEntry"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="FERTIG" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

@@ -49,14 +49,26 @@ public class DataHandler {
         openWrite();
         //TODO
         //DEBUG
-        db.execSQL(String.format(Locale.getDefault(), "insert into" + TABLE_NAME + " VALUES ('%d', '%s', '%f', '%f', '%s', '%f', '%f');",
+        /*db.execSQL(String.format(Locale.getDefault(), "insert into " + TABLE_NAME + " VALUES ('%d', '%s', '%f', '%f', '%s', '%f', '%f');",
                 dbT.getID(),
                 dbT.getTitle(),
                 dbT.getLatlng().latitude,
                 dbT.getLatlng().longitude,
                 dbT.getDescription(),
                 dbT.getRating(),
-                dbT.getPrice()));
+                dbT.getPrice()));*/
+
+        String input = String.format(Locale.ENGLISH, "'%d', '%s', '%f', '%f', '%s', '%f', '%f'",
+                dbT.getID(),
+                dbT.getTitle(),
+                dbT.getLatlng().latitude,
+                dbT.getLatlng().longitude,
+                dbT.getDescription(),
+                dbT.getRating(),
+                dbT.getPrice());
+
+        db.execSQL("insert into " + TABLE_NAME + " VALUES (" + input + ");");
+
         close();
     }
 

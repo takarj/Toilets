@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap map;
     protected static final int MY_LOCATION_PERMISSION = 1;
     private BottomSheetBehavior sheetBehavior;
-    private static int PEEK_HEIGHT_COLLAPSED = 100;
+    private int PEEK_HEIGHT_COLLAPSED;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener;
 
@@ -174,8 +174,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void showToiletInfo(Marker m){
         //LOAD ToiletInfo corresponding to Marker
-        Toast.makeText(getApplicationContext(), "showing info", Toast.LENGTH_SHORT);
-
         ToiletInfo tInfo = toiletManager.getToiletInfo(m);
         EditText nameTxt = findViewById(R.id.nameTxt);
         EditText descriptionTxt = findViewById(R.id.descriptionTxt);
@@ -185,7 +183,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setText(tInfo.getDescription());
         priceTxt.setText(String.valueOf(tInfo.getPrice()));
         //pull up bottomsheet
-        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        //sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     public void deleteCurrent(View v){
@@ -217,6 +215,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void confirmEntry(View v){
+        EditText nameTxt = findViewById(R.id.nameTxt);
+        EditText descriptionTxt = findViewById(R.id.descriptionTxt);
+        EditText priceTxt = findViewById(R.id.priceTxt);
+
+        ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
+
+        currentMarker.setTitle(nameTxt.getText().toString());
+        tInfo.description(descriptionTxt.getText().toString());
+        tInfo.price(Float.valueOf(priceTxt.getText().toString()));
+
+        //unfocus all edittexts
+        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
     private void loadDatabaseToilet(DatabaseToilet dbT){
         MarkerOptions mOpt = new MarkerOptions()
                 .position(dbT.getLatlng())
@@ -241,7 +254,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         int id;
         do{
             id = randomInt(0, 100000);
-        }while(localToilets.checkID(id));
+        }while(toiletManager.checkID(id));
 
         return id;
     }

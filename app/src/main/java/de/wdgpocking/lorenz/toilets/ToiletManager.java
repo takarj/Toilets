@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ToiletManager {
     private HashMap<Marker, ToiletInfo> toilets;
@@ -20,6 +21,15 @@ public class ToiletManager {
     public void removeToilet(Marker marker){
         toilets.remove(marker);
         marker.remove();
+    }
+
+    public boolean checkID(int id){
+        for(Map.Entry<Marker, ToiletInfo> entry : toilets.entrySet()){
+            if(entry.getValue().getID() == id){
+                return true;
+            }
+        }
+        return false;
     }
 
     public ToiletInfo getToiletInfo(Marker marker){
