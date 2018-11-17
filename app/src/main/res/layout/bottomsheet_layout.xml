@@ -72,30 +72,33 @@
             <EditText
                 android:id="@+id/nameTxt"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:hint="Name" />
+                android:hint="Name"
+                android:maxLines="1" />
 
             <EditText
                 android:id="@+id/descriptionTxt"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:hint="Beschreibung" />
+                android:hint="Beschreibung"
+                android:maxLines="5" />
 
             <EditText
                 android:id="@+id/priceTxt"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:hint="Preis"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:maxLines="1" />
 
         </LinearLayout>
 

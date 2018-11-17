@@ -1,6 +1,7 @@
 package de.wdgpocking.lorenz.toilets;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -226,8 +228,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         tInfo.description(descriptionTxt.getText().toString());
         tInfo.price(Float.valueOf(priceTxt.getText().toString()));
 
-        //unfocus all edittexts
-        findViewById(R.id.inputField).clearFocus();
+        hideKeyboard();
 
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
@@ -269,5 +270,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    private void hideKeyboard() {
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }
