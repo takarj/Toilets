@@ -29,15 +29,14 @@ import java.util.Random;
 import de.wdgpocking.lorenz.toilets.Database.DataHandler;
 import de.wdgpocking.lorenz.toilets.Database.DatabaseToilet;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap map;
     protected static final int MY_LOCATION_PERMISSION = 1;
     private BottomSheetBehavior sheetBehavior;
-    private boolean hud;
     private static int PEEK_HEIGHT_COLLAPSED = 100;
-    private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
+    private GoogleMap.OnMarkerClickListener onMarkerClickListener;
 
     private Marker currentMarker;
 
@@ -86,30 +85,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         toiletManager = new ToiletManager();
         localToilets = new DataHandler(getApplicationContext());
 
-        hud = true;
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         sheetBehavior.setPeekHeight(PEEK_HEIGHT_COLLAPSED);
-
-        onMapClickListener = new GoogleMap.OnMapClickListener() {
-            /**
-             * @param latLng
-             * Hides or Unhides HUD (BottomSheet + SearchBar)
-             */
-            @Override
-            public void onMapClick(LatLng latLng) {
-                //TODO
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                if(hud){
-                    sheetBehavior.setPeekHeight(0);
-                }else {
-                    sheetBehavior.setPeekHeight(PEEK_HEIGHT_COLLAPSED);
-                }
-                //switch if hud is shown or not
-                hud = !hud;
-            }
-        };
 
         onMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -137,6 +116,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 //showToiletInfo(marker);
             }
         };
+
+        onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast.makeText(getApplicationContext(), "marker clicked", Toast.LENGTH_SHORT);
+                showToiletInfo(marker);
+                currentMarker = marker;
+                return false;
+            }
+        };
     }
 
     /**
@@ -161,7 +150,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         map.setOnMapLongClickListener(onMapLongClickListener);
-        map.setOnMapClickListener(onMapClickListener);
+        map.setOnMarkerClickListener(onMarkerClickListener);
 
         loadAllToiletsFromDB();
     }
@@ -183,31 +172,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        showToiletInfo(marker);
-        currentMarker = marker;
-        return false;
-    }
-
     private void showToiletInfo(Marker m){
         //LOAD ToiletInfo corresponding to Marker
+        Toast.makeText(getApplicationContext(), "showing info", Toast.LENGTH_SHORT);
+
         ToiletInfo tInfo = toiletManager.getToiletInfo(m);
-        //Put ToiletInfo into Bottomsheet
-        LinearLayout bottomsheet = findViewById(R.id.bottom_sheet_info);
-        //bottomsheet.findViewById()
-        EditText nameTxt = bottomsheet.findViewById(R.id.nameTxt);
-        EditText descriptionTxt = bottomsheet.findViewById(R.id.descriptionTxt);
-        EditText priceTxt = bottomsheet.findViewById(R.id.priceTxt);
+        EditText nameTxt = findViewById(R.id.nameTxt);
+        EditText descriptionTxt = findViewById(R.id.descriptionTxt);
+        EditText priceTxt = findViewById(R.id.priceTxt);
 
         nameTxt.setText(m.getTitle());
         descriptionTxt.setText(tInfo.getDescription());
         priceTxt.setText(String.valueOf(tInfo.getPrice()));
         //pull up bottomsheet
         sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        //show hud
-        hud = true;
-
     }
 
     public void deleteCurrent(View v){
@@ -217,6 +195,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             //pop-up window "really wanna delete? lol"
             localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
             toiletManager.removeToilet(currentMarker);
+            currentMarker.remove();
         }
     }
 
@@ -233,6 +212,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     .setRating(toiletInfo.getRating())
                     .setPrice(toiletInfo.getPrice())
             );
+
+            Toast.makeText(getApplicationContext(), "toilet saved", Toast.LENGTH_SHORT);
         }
     }
 

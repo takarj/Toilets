@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class DataHandler {
 
@@ -46,7 +47,9 @@ public class DataHandler {
 
     public void addToilet(DatabaseToilet dbT){
         openWrite();
-        db.execSQL(String.format("insert into" + TABLE_NAME + " (%s%s%s%s%s%s%s) VALUES ('%d', '%s', '%f', '%f', '%s', '%f', '%f'",
+        //TODO
+        //DEBUG
+        db.execSQL(String.format(Locale.getDefault(), "insert into" + TABLE_NAME + " VALUES ('%d', '%s', '%f', '%f', '%s', '%f', '%f');",
                 dbT.getID(),
                 dbT.getTitle(),
                 dbT.getLatlng().latitude,
