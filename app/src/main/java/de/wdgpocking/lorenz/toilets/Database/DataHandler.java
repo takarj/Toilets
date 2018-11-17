@@ -47,7 +47,6 @@ public class DataHandler {
 
     public void addToilet(DatabaseToilet dbT){
         openWrite();
-        //TODO
         //DEBUG
         /*db.execSQL(String.format(Locale.getDefault(), "insert into " + TABLE_NAME + " VALUES ('%d', '%s', '%f', '%f', '%s', '%f', '%f');",
                 dbT.getID(),
@@ -67,7 +66,7 @@ public class DataHandler {
                 dbT.getRating(),
                 dbT.getPrice());
 
-        db.execSQL("insert into " + TABLE_NAME + " VALUES (" + input + ");");
+        db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
         close();
     }
@@ -94,7 +93,7 @@ public class DataHandler {
 
     public void deleteToiletByID(int id){
         openWrite();
-        db.execSQL("DELETE FROM " + TABLE_NAME + "WHERE ID = " + id +";");
+        db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE ID = " + id +";");
         close();
     }
 
@@ -125,7 +124,7 @@ public class DataHandler {
         @Override
         public void onCreate(SQLiteDatabase db){
             db.execSQL("create table if not exists toiletsTable(" +
-                    "ID int not null, " +
+                    "ID int unique, " +
                     "title text not null, " +
                     "lat double not null, " +
                     "lng double not null, " +

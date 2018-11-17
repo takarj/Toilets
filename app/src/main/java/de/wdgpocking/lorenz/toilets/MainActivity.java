@@ -227,6 +227,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         tInfo.price(Float.valueOf(priceTxt.getText().toString()));
 
         //unfocus all edittexts
+        findViewById(R.id.inputField).clearFocus();
+
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
