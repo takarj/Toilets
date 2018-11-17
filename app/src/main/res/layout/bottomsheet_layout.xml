@@ -17,122 +17,93 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
             <Button
-                android:id="@+id/Savebtn"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:layout_weight=""
-                android:text="Save" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
-
-            <Button
-                android:id="@+id/Deletebtn"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:layout_weight=""
+                android:id="@+id/deleteBtn"
+                android:onClick="deleteCurrent"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:text="Delete" />
 
             <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
             <Button
-                android:id="@+id/Routebtn"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:layout_weight=""
+                android:id="@+id/saveBtn"
+                android:onClick="saveCurrentToDatabase"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="Save" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/routeBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:text="Route" />
 
             <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" >
-            </Space>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
         </LinearLayout>
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <EditText
-            android:id="@+id/Nametxt"
-            android:layout_width="317dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:hint="Name" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="15dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <EditText
-            android:id="@+id/Beschreibungtxt"
-            android:layout_width="317dp"
-            android:layout_height="45dp"
-            android:hint = "Beschreibung"
-            android:layout_gravity="center"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="15dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <EditText
-            android:id="@+id/Preistxt"
-            android:layout_width="317dp"
-            android:layout_height="45dp"
-            android:hint = "Preis"
-            android:inputType="numberDecimal"
-            android:layout_gravity="center" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"></Space>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="288dp"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_margin="25dp"
+            android:orientation="vertical">
 
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"></Space>
-
-            <Button
-                android:id="@+id/Editbtn"
-                android:layout_width="6dp"
-                android:layout_height="81dp"
+            <EditText
+                android:id="@+id/nameTxt"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:text="Edit" />
+                android:hint="Name" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"></Space>
+            <EditText
+                android:id="@+id/descriptionTxt"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:hint="Beschreibung" />
+
+            <EditText
+                android:id="@+id/priceTxt"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:hint="Preis"
+                android:inputType="numberDecimal" />
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/editBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="Edit" />
 
     </LinearLayout>
 

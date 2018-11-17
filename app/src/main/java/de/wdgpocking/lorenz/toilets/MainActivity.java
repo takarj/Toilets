@@ -2,23 +2,20 @@ package de.wdgpocking.lorenz.toilets;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.common.internal.Constants;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -26,7 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import de.wdgpocking.lorenz.toilets.Database.DatabaseHelper;
+import java.util.ArrayList;
+import java.util.Random;
+
+import de.wdgpocking.lorenz.toilets.Database.DataHandler;
+import de.wdgpocking.lorenz.toilets.Database.DatabaseToilet;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -34,20 +35,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected static final int MY_LOCATION_PERMISSION = 1;
     private BottomSheetBehavior sheetBehavior;
     private boolean hud;
-    private static final int PEEK_HEIGHT_COLLAPSED = 100;
+    private static int PEEK_HEIGHT_COLLAPSED = 100;
     private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
-    private DatabaseHelper localToilets;
-    private Button save;
-    private Button delete;
-    private Button route;
-    private Button edit;
-    private EditText beschreibung;
-    private EditText name;
-    private EditText preis;
+
+    private Marker currentMarker;
+
+    private DataHandler localToilets;
+
     private ToiletManager toiletManager;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +53,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        PEEK_HEIGHT_COLLAPSED = dpToPx(50);
 
         //move MyLocationButton to bottom-right
         View mapView = mapFragment.getView();
@@ -86,21 +84,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         toiletManager = new ToiletManager();
-        localToilets = new DatabaseHelper(getApplicationContext());
+        localToilets = new DataHandler(getApplicationContext());
 
         hud = true;
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         sheetBehavior.setPeekHeight(PEEK_HEIGHT_COLLAPSED);
-        save=(Button)findViewById(R.id.Savebtn);
-        delete= (Button)findViewById(R.id.Deletebtn);
-        route= (Button)findViewById(R.id.Routebtn);
-        edit= (Button)findViewById(R.id.Editbtn);
-        beschreibung= (EditText)findViewById(R.id.Beschreibungtxt);
-        name=(EditText)findViewById(R.id.Nametxt);
-        preis= (EditText) findViewById(R.id.Preistxt);
-
 
         onMapClickListener = new GoogleMap.OnMapClickListener() {
             /**
@@ -139,7 +129,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 ToiletInfo tInfo = new ToiletInfo()
                         .rating(5f)
                         .description("")
-                        .price(0f);
+                        .price(0f)
+                        .setID(generateID());
 
                 toiletManager.addToilet(marker, tInfo);
 
@@ -171,6 +162,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         map.setOnMapLongClickListener(onMapLongClickListener);
         map.setOnMapClickListener(onMapClickListener);
+
+        loadAllToiletsFromDB();
     }
 
     @Override
@@ -193,37 +186,92 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         showToiletInfo(marker);
+        currentMarker = marker;
         return false;
     }
 
     private void showToiletInfo(Marker m){
-        //TODO
         //LOAD ToiletInfo corresponding to Marker
         ToiletInfo tInfo = toiletManager.getToiletInfo(m);
         //Put ToiletInfo into Bottomsheet
         LinearLayout bottomsheet = findViewById(R.id.bottom_sheet_info);
         //bottomsheet.findViewById()
+        EditText nameTxt = bottomsheet.findViewById(R.id.nameTxt);
+        EditText descriptionTxt = bottomsheet.findViewById(R.id.descriptionTxt);
+        EditText priceTxt = bottomsheet.findViewById(R.id.priceTxt);
+
+        nameTxt.setText(m.getTitle());
+        descriptionTxt.setText(tInfo.getDescription());
+        priceTxt.setText(String.valueOf(tInfo.getPrice()));
         //pull up bottomsheet
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         //show hud
         hud = true;
 
     }
-    private void setEditable (View v){
-        EditText name = findViewById(R.id.Nametxt);
-        EditText beschreibung = findViewById(R.id.Beschreibungtxt);
-        EditText preis = findViewById(R.id.Preistxt);
-        name.setEnabled(true);
-        beschreibung.setEnabled(true);
-        preis.setEnabled(true);
-    }
-    private void setUneditable (View v) {
-        EditText name = findViewById(R.id.Nametxt);
-        EditText beschreibung = findViewById(R.id.Beschreibungtxt);
-        EditText preis = findViewById(R.id.Preistxt);
-        beschreibung.setEnabled(false);
-        name.setEnabled(false);
-        preis.setEnabled(false);
 
+    public void deleteCurrent(View v){
+        if(currentMarker == null){
+            Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+        }else{
+            //pop-up window "really wanna delete? lol"
+            localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
+            toiletManager.removeToilet(currentMarker);
+        }
     }
+
+    public void saveCurrentToDatabase(View v){
+        if(currentMarker == null){
+            Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+        }else{
+            ToiletInfo toiletInfo = toiletManager.getToiletInfo(currentMarker);
+            localToilets.addToilet(new DatabaseToilet()
+                    .setID(toiletInfo.getID())
+                    .setDescription(toiletInfo.getDescription())
+                    .setLatlng(currentMarker.getPosition())
+                    .setTitle(currentMarker.getTitle())
+                    .setRating(toiletInfo.getRating())
+                    .setPrice(toiletInfo.getPrice())
+            );
+        }
+    }
+
+    private void loadDatabaseToilet(DatabaseToilet dbT){
+        MarkerOptions mOpt = new MarkerOptions()
+                .position(dbT.getLatlng())
+                .title(dbT.getTitle());
+        Marker m = map.addMarker(mOpt);
+        ToiletInfo tInfo = new ToiletInfo()
+                .description(dbT.getDescription())
+                .price(dbT.getPrice())
+                .rating(dbT.getRating())
+                .setID(dbT.getID());
+        toiletManager.addToilet(m, tInfo);
+    }
+
+    private void loadAllToiletsFromDB(){
+        ArrayList<DatabaseToilet> toilets = localToilets.getAllToilets();
+        for(DatabaseToilet t : toilets){
+            loadDatabaseToilet(t);
+        }
+    }
+
+    private int generateID(){
+        int id;
+        do{
+            id = randomInt(0, 100000);
+        }while(localToilets.checkID(id));
+
+        return id;
+    }
+
+    private int randomInt(int min, int max){
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
+    private int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

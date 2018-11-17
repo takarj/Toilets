@@ -22,29 +22,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.design.widget.AppBarLayout
-                    android:id="@+id/appbar"
-                    android:padding="15dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="?attr/actionBarSize"
-                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                    android:background="@android:color/transparent">
-
-                    <android.support.v7.widget.Toolbar
-                        android:id="@+id/toolbar"
-                        android:layout_height="?attr/actionBarSize"
-                        app:layout_collapseMode="pin"
-                        android:minHeight="?attr/actionBarSize"
-                        android:layout_width="match_parent"
-                        app:titleTextColor="@color/colorAccent"
-                        android:background="@android:color/white"
-                        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-                    </android.support.v7.widget.Toolbar>
-
-                </android.support.design.widget.AppBarLayout>
-
                 <fragment
                     android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"

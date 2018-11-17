@@ -93,6 +93,14 @@ public class DataHandler {
                 .setPrice(c.getFloat(6));
     }
 
+    public boolean checkID(int id){
+        openRead();
+        Cursor c = db.rawQuery("select 1 from " +  TABLE_NAME + " where ID =" + id +  ";", null);
+        boolean exists = c.moveToFirst();
+        close();
+        return exists;
+    }
+
     private static class DataBaseHelper extends SQLiteOpenHelper {
 
         public DataBaseHelper(Context ctx){
