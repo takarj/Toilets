@@ -39,6 +39,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private int PEEK_HEIGHT_COLLAPSED;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener;
+    private BottomSheetBehavior.BottomSheetCallback bottomSheetCallback;
 
     private Marker currentMarker;
 
@@ -128,6 +129,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         };
+
+        bottomSheetCallback = new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                hideKeyboard();
+            }
+        };
+
+        sheetBehavior.setBottomSheetCallback(bottomSheetCallback);
     }
 
     /**
