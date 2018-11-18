@@ -264,9 +264,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void lockInput(){
         locked = true;
 
-        nameTxt.setInputType(InputType.TYPE_NULL);
-        descriptionTxt.setInputType(InputType.TYPE_NULL);
-        priceTxt.setInputType(InputType.TYPE_NULL);
+//        nameTxt.setInputType(InputType.TYPE_NULL);
+//        descriptionTxt.setInputType(InputType.TYPE_NULL);
+//        priceTxt.setInputType(InputType.TYPE_NULL);
 
         nameTxt.setFocusable(false);
         descriptionTxt.setFocusable(false);
@@ -275,6 +275,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         nameTxt.setFocusableInTouchMode(false);
         descriptionTxt.setFocusableInTouchMode(false);
         priceTxt.setFocusableInTouchMode(false);
+
+        nameTxt.setClickable(false);
+        descriptionTxt.setClickable(false);
+        priceTxt.setClickable(false);
     }
 
     private void allowInput(){
@@ -288,9 +292,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setFocusable(true);
         priceTxt.setFocusable(true);
 
-        nameTxt.setInputType(InputType.TYPE_CLASS_TEXT);
-        descriptionTxt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        priceTxt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        nameTxt.setClickable(true);
+        descriptionTxt.setClickable(true);
+        priceTxt.setClickable(true);
+
+//        nameTxt.setInputType(InputType.TYPE_CLASS_TEXT);
+//        descriptionTxt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//        priceTxt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
     }
 
     public void changeLock(View v){
