@@ -77,6 +77,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:hint="Name"
+                android:inputType="text"
                 android:maxLines="1" />
 
             <EditText
@@ -87,7 +88,9 @@
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:hint="Beschreibung"
-                android:maxLines="5" />
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="1"
+                android:maxLength="200" />
 
             <EditText
                 android:id="@+id/priceTxt"
@@ -107,15 +110,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:text="Edit" />
-
-        <Button
-            android:id="@+id/confirmBtn"
-            android:onClick="confirmEntry"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:text="FERTIG" />
+            android:text="EDIT"
+            android:onClick="changeLock"/>
 
     </LinearLayout>
 

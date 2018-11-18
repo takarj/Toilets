@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -46,6 +47,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private DataHandler localToilets;
 
     private ToiletManager toiletManager;
+
+    private EditText nameTxt;
+    private EditText descriptionTxt;
+    private EditText priceTxt;
+
+    private boolean locked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,11 +145,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                saveInput();
                 hideKeyboard();
             }
         };
 
         sheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+
+        nameTxt = findViewById(R.id.nameTxt);
+        descriptionTxt = findViewById(R.id.descriptionTxt);
+        priceTxt = findViewById(R.id.priceTxt);
+
+        lockInput();
     }
 
     /**
@@ -192,9 +206,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void showToiletInfo(Marker m){
         //LOAD ToiletInfo corresponding to Marker
         ToiletInfo tInfo = toiletManager.getToiletInfo(m);
-        EditText nameTxt = findViewById(R.id.nameTxt);
-        EditText descriptionTxt = findViewById(R.id.descriptionTxt);
-        EditText priceTxt = findViewById(R.id.priceTxt);
 
         nameTxt.setText(m.getTitle());
         descriptionTxt.setText(tInfo.getDescription());
@@ -232,20 +243,61 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void confirmEntry(View v){
-        EditText nameTxt = findViewById(R.id.nameTxt);
-        EditText descriptionTxt = findViewById(R.id.descriptionTxt);
-        EditText priceTxt = findViewById(R.id.priceTxt);
-
-        ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
-
-        currentMarker.setTitle(nameTxt.getText().toString());
-        tInfo.description(descriptionTxt.getText().toString());
-        tInfo.price(Float.valueOf(priceTxt.getText().toString()));
+    public void confirmEntry(){
+        saveInput();
 
         hideKeyboard();
 
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void saveInput(){
+        if(currentMarker != null) {
+            ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
+
+            currentMarker.setTitle(nameTxt.getText().toString());
+            tInfo.description(descriptionTxt.getText().toString());
+            tInfo.price(Float.valueOf(priceTxt.getText().toString()));
+        }
+    }
+
+    private void lockInput(){
+        locked = true;
+
+        nameTxt.setInputType(InputType.TYPE_NULL);
+        descriptionTxt.setInputType(InputType.TYPE_NULL);
+        priceTxt.setInputType(InputType.TYPE_NULL);
+
+        nameTxt.setFocusable(false);
+        descriptionTxt.setFocusable(false);
+        priceTxt.setFocusable(false);
+    }
+
+    private void allowInput(){
+        locked = false;
+
+        nameTxt.setFocusable(true);
+        descriptionTxt.setFocusable(true);
+        priceTxt.setFocusable(true);
+
+        nameTxt.setInputType(InputType.TYPE_CLASS_TEXT);
+        descriptionTxt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        priceTxt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+    }
+
+    public void changeLock(View v){
+        //if edit button clicked
+        Button b = (Button) v;
+        if(locked){
+            allowInput();
+            //set button to "done"
+            b.setText("DONE");
+        }else{
+            confirmEntry();
+            lockInput();
+            //set button to edit
+            b.setText("EDIT");
+        }
     }
 
     private void loadDatabaseToilet(DatabaseToilet dbT){
