@@ -271,10 +271,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         nameTxt.setFocusable(false);
         descriptionTxt.setFocusable(false);
         priceTxt.setFocusable(false);
+
+        nameTxt.setFocusableInTouchMode(false);
+        descriptionTxt.setFocusableInTouchMode(false);
+        priceTxt.setFocusableInTouchMode(false);
     }
 
     private void allowInput(){
         locked = false;
+
+        nameTxt.setFocusableInTouchMode(true);
+        descriptionTxt.setFocusableInTouchMode(true);
+        priceTxt.setFocusableInTouchMode(true);
 
         nameTxt.setFocusable(true);
         descriptionTxt.setFocusable(true);
