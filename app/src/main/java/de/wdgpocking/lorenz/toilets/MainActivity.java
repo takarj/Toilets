@@ -146,6 +146,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 saveInput();
+                lockInput();
                 hideKeyboard();
             }
         };
