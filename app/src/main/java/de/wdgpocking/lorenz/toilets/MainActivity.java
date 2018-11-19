@@ -274,9 +274,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setFocusableInTouchMode(false);
         priceTxt.setFocusableInTouchMode(false);
 
-        nameTxt.setClickable(false);
-        descriptionTxt.setClickable(false);
-        priceTxt.setClickable(false);
+//        nameTxt.setClickable(false);
+//        descriptionTxt.setClickable(false);
+//        priceTxt.setClickable(false);
     }
 
     private void allowInput(){
@@ -290,9 +290,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setFocusable(true);
         priceTxt.setFocusable(true);
 
-        nameTxt.setClickable(true);
-        descriptionTxt.setClickable(true);
-        priceTxt.setClickable(true);
+//        nameTxt.setClickable(true);
+//        descriptionTxt.setClickable(true);
+//        priceTxt.setClickable(true);
 
 //        nameTxt.setInputType(InputType.TYPE_CLASS_TEXT);
 //        descriptionTxt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
