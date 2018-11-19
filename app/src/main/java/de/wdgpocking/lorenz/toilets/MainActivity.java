@@ -130,7 +130,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Toast.makeText(getApplicationContext(), "marker clicked", Toast.LENGTH_SHORT);
                 showToiletInfo(marker);
                 currentMarker = marker;
                 return false;
@@ -197,7 +196,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         map.setMyLocationEnabled(true);
                     }
                 }else{
-                    Toast.makeText(getApplicationContext(), "We can't help you then", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "We can't help you then", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 break;
@@ -217,7 +216,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void deleteCurrent(View v){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+            //Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
         }else{
             //pop-up window "really wanna delete? lol"
             localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
@@ -228,7 +227,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void saveCurrentToDatabase(View v){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+            //Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
         }else{
             ToiletInfo toiletInfo = toiletManager.getToiletInfo(currentMarker);
             localToilets.addToilet(new DatabaseToilet()
@@ -239,8 +238,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     .setRating(toiletInfo.getRating())
                     .setPrice(toiletInfo.getPrice())
             );
-
-            Toast.makeText(getApplicationContext(), "toilet saved", Toast.LENGTH_SHORT);
         }
     }
 
