@@ -15,6 +15,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -301,16 +302,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void changeLock(View v){
         //if edit button clicked
-        Button b = (Button) v;
+        ImageButton b = (ImageButton) v;
         if(locked){
             allowInput();
             //set button to "done"
-            b.setText("DONE");
+            b.setImageResource(R.drawable.done_icon_64);
         }else{
             confirmEntry();
             lockInput();
             //set button to edit
-            b.setText("EDIT");
+            b.setImageResource(R.drawable.edit_icon_64);
         }
     }
 
