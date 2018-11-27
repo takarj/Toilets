@@ -23,6 +23,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -114,7 +116,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
-                        .title("Custom Toilet");
+                        .title("Custom Toilet")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.toilet_marker_32));
                 Marker marker = map.addMarker(mOpt);
                 ToiletInfo tInfo = new ToiletInfo()
                         .rating(5f)
@@ -318,7 +321,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private void loadDatabaseToilet(DatabaseToilet dbT){
         MarkerOptions mOpt = new MarkerOptions()
                 .position(dbT.getLatlng())
-                .title(dbT.getTitle());
+                .title(dbT.getTitle())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.toilet_marker_32));
         Marker m = map.addMarker(mOpt);
         ToiletInfo tInfo = new ToiletInfo()
                 .description(dbT.getDescription())
