@@ -11,8 +11,18 @@ public class DatabaseToilet {
     private String description;
     private float rating;
     private float price;
+    private char currency;
 
     public DatabaseToilet(){
+    }
+
+    public char getCurrency() {
+        return currency;
+    }
+
+    public DatabaseToilet setCurrency(char currency) {
+        this.currency = currency;
+        return this;
     }
 
     public String getTitle() {

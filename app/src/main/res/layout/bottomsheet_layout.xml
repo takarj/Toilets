@@ -108,21 +108,36 @@
                 android:maxLines="7"
                 android:maxLength="200" />
 
-            <EditText
-                android:id="@+id/priceTxt"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
-                android:hint="Preis"
-                android:inputType="numberDecimal"
-                android:maxLines="1" />
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/priceTxt"
+                    android:layout_width="246dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:hint="Preis"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1" />
+
+                <Spinner
+                    android:id="@+id/currencySpinner"
+                    android:layout_width="wrap_content"
+                    android:background="@null"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/imageButton4"
+            android:id="@+id/editBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"

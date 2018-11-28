@@ -7,6 +7,7 @@ public class ToiletInfo {
     private float rating;
     private String description;
     private float price;
+    private char currency;
 
     public ToiletInfo(){
     }
@@ -48,6 +49,15 @@ public class ToiletInfo {
 
     public ToiletInfo setID(int ID) {
         this.ID = ID;
+        return this;
+    }
+
+    public char getCurrency() {
+        return currency;
+    }
+
+    public ToiletInfo setCurrency(char currency) {
+        this.currency = currency;
         return this;
     }
 }

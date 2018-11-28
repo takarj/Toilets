@@ -57,14 +57,15 @@ public class DataHandler {
                 dbT.getRating(),
                 dbT.getPrice()));*/
 
-        String input = String.format(Locale.ENGLISH, "'%d', '%s', '%f', '%f', '%s', '%f', '%f'",
+        String input = String.format(Locale.ENGLISH, "'%d', '%s', '%f', '%f', '%s', '%f', '%f', '%c'",
                 dbT.getID(),
                 dbT.getTitle(),
                 dbT.getLatlng().latitude,
                 dbT.getLatlng().longitude,
                 dbT.getDescription(),
                 dbT.getRating(),
-                dbT.getPrice());
+                dbT.getPrice(),
+                dbT.getCurrency());
 
         db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
@@ -104,7 +105,8 @@ public class DataHandler {
                 .setLatlng(new LatLng(c.getDouble(2), c.getDouble(3)))
                 .setDescription(c.getString(4))
                 .setRating(c.getFloat(5))
-                .setPrice(c.getFloat(6));
+                .setPrice(c.getFloat(6))
+                .setCurrency(c.getString(7).charAt(0));
     }
 
     public boolean checkID(int id){
@@ -130,7 +132,8 @@ public class DataHandler {
                     "lng double not null, " +
                     "description text not null, " +
                     "rating float not null, " +
-                    "price float not null);");
+                    "price float not null, "+
+                    "currency text not null);");
         }
 
         @Override

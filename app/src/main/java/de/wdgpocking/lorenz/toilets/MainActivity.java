@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,11 +18,15 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -58,6 +63,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText nameTxt;
     private EditText descriptionTxt;
     private EditText priceTxt;
+    private ImageButton editButton;
+    private Spinner spinner;
 
     private boolean locked;
 
@@ -163,6 +170,28 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         nameTxt = findViewById(R.id.nameTxt);
         descriptionTxt = findViewById(R.id.descriptionTxt);
         priceTxt = findViewById(R.id.priceTxt);
+        editButton = findViewById(R.id.editBtn);
+
+        spinner = (Spinner) findViewById(R.id.currencySpinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.currencies_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> parent, View view, int pos,
+                                       long id) {
+                ((TextView) view).setTextColor(Color.BLACK);
+            }
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+
+        });
+
+        spinner.setSelection(0);
 
         lockInput();
     }
@@ -218,6 +247,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         nameTxt.setText(m.getTitle());
         descriptionTxt.setText(tInfo.getDescription());
         priceTxt.setText(String.valueOf(tInfo.getPrice()));
+        String[] currencies = getResources().getStringArray(R.array.currencies_array);
+        int i = 0;
+        for(int j = 0; j < currencies.length; j++){
+            if(currencies[j].charAt(0) == tInfo.getCurrency()){
+                i = j;
+            }
+        }
+        spinner.setSelection(i);
         //pull up bottomsheet
         //sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -245,6 +282,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     .setTitle(currentMarker.getTitle())
                     .setRating(toiletInfo.getRating())
                     .setPrice(toiletInfo.getPrice())
+                    .setCurrency(toiletInfo.getCurrency())
             );
         }
     }
@@ -264,6 +302,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             currentMarker.setTitle(nameTxt.getText().toString());
             tInfo.description(descriptionTxt.getText().toString());
             tInfo.price(Float.valueOf(priceTxt.getText().toString()));
+            tInfo.setCurrency(spinner.getSelectedItem().toString().charAt(0));
         }
     }
 
@@ -282,6 +321,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setFocusableInTouchMode(false);
         priceTxt.setFocusableInTouchMode(false);
 
+        spinner.setEnabled(false);
+
+        //set button to edit
+        editButton.setImageResource(R.drawable.ic_edit);
+
 //        nameTxt.setClickable(false);
 //        descriptionTxt.setClickable(false);
 //        priceTxt.setClickable(false);
@@ -298,6 +342,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         descriptionTxt.setFocusable(true);
         priceTxt.setFocusable(true);
 
+        spinner.setEnabled(true);
+
+
+        //set button to "done"
+        editButton.setImageResource(R.drawable.ic_done);
 //        nameTxt.setClickable(true);
 //        descriptionTxt.setClickable(true);
 //        priceTxt.setClickable(true);
@@ -309,16 +358,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void changeLock(View v){
         //if edit button clicked
-        ImageButton b = (ImageButton) v;
         if(locked){
             allowInput();
-            //set button to "done"
-            b.setImageResource(R.drawable.ic_done);
         }else{
             confirmEntry();
             lockInput();
-            //set button to edit
-            b.setImageResource(R.drawable.ic_edit);
         }
     }
 
@@ -332,7 +376,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .description(dbT.getDescription())
                 .price(dbT.getPrice())
                 .rating(dbT.getRating())
-                .setID(dbT.getID());
+                .setID(dbT.getID())
+                .setCurrency(dbT.getCurrency());
         toiletManager.addToilet(m, tInfo);
     }
 
@@ -358,8 +403,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private BitmapDescriptor getToiletMarkerBitmap() {
-        int height = 200;
-        int width = 100;
+        int height = 160;
+        int width = 80;
         BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawableForDensity(R.drawable.ic_toilet_marker, 2000);
         Bitmap b = bitmapdraw.getBitmap();
         Bitmap marker = Bitmap.createScaledBitmap(b, width, height, false);
