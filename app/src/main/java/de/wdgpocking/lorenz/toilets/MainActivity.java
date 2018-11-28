@@ -117,7 +117,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
                         .title("Custom Toilet")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.toilet_marker_32));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_toilet_marker));
                 Marker marker = map.addMarker(mOpt);
                 ToiletInfo tInfo = new ToiletInfo()
                         .rating(5f)
@@ -309,12 +309,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(locked){
             allowInput();
             //set button to "done"
-            b.setImageResource(R.drawable.done_icon_64);
+            b.setImageResource(R.drawable.ic_done);
         }else{
             confirmEntry();
             lockInput();
             //set button to edit
-            b.setImageResource(R.drawable.edit_icon_64);
+            b.setImageResource(R.drawable.ic_edit);
         }
     }
 
@@ -322,7 +322,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         MarkerOptions mOpt = new MarkerOptions()
                 .position(dbT.getLatlng())
                 .title(dbT.getTitle())
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.toilet_marker_32));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_toilet_marker));
         Marker m = map.addMarker(mOpt);
         ToiletInfo tInfo = new ToiletInfo()
                 .description(dbT.getDescription())
