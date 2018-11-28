@@ -3,6 +3,10 @@ package de.wdgpocking.lorenz.toilets;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -117,7 +121,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions mOpt = new MarkerOptions()
                         .position(latLng)
                         .title("Custom Toilet")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_toilet_marker));
+                        .icon(getToiletMarkerBitmap());
                 Marker marker = map.addMarker(mOpt);
                 ToiletInfo tInfo = new ToiletInfo()
                         .rating(5f)
@@ -322,7 +326,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         MarkerOptions mOpt = new MarkerOptions()
                 .position(dbT.getLatlng())
                 .title(dbT.getTitle())
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_toilet_marker));
+                .icon(getToiletMarkerBitmap());
         Marker m = map.addMarker(mOpt);
         ToiletInfo tInfo = new ToiletInfo()
                 .description(dbT.getDescription())
@@ -351,6 +355,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private int randomInt(int min, int max){
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+
+    private BitmapDescriptor getToiletMarkerBitmap() {
+        int height = 200;
+        int width = 100;
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawableForDensity(R.drawable.ic_toilet_marker, 2000);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap marker = Bitmap.createScaledBitmap(b, width, height, false);
+        return BitmapDescriptorFactory.fromBitmap(marker);
     }
 
     private int dpToPx(int dp) {
