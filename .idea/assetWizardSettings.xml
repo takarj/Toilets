@@ -19,10 +19,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_toilet_marker.png" />
+                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_bg.png" />
                                       <entry key="outputName" value="ic_bg" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="8f2d56" />
+                                      <entry key="themeColor" value="73d2de" />
                                     </map>
                                   </option>
                                 </PersistentState>
