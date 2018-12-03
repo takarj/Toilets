@@ -67,6 +67,7 @@
                 android:adjustViewBounds="true"
                 android:background="@null"
                 android:padding="5dp"
+                android:onClick="showRoute"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_route" />
 

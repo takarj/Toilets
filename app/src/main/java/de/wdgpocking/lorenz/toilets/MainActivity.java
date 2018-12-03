@@ -1,38 +1,27 @@
 package de.wdgpocking.lorenz.toilets;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
+
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,6 +31,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -371,6 +362,32 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             confirmEntry();
             lockInput();
         }
+    }
+
+    public void showRoute(View v){
+        if(currentMarker == null){
+            return;
+        }
+
+        double latDest = currentMarker.getPosition().latitude;
+        double lngDest = currentMarker.getPosition().longitude;
+
+        //own location
+
+        String directionsKey = getString(R.string.google_directions_key);
+
+
+        //load json
+        //https://maps.googleapis.com/maps/api/directions/json?origin=myLoc&destination=latDest, lngDest&key=directionsKey&mode=walking
+
+        //draw polylines
+
+        /*
+        Polyline line = map.addPolyline(new PolylineOptions()
+                .add(new LatLng(51.5, -0.1), new LatLng(40.7, -74.0))
+                .width(5)
+                .color(Color.BLUE));
+        */
     }
 
     private void loadDatabaseToilet(DatabaseToilet dbT){
