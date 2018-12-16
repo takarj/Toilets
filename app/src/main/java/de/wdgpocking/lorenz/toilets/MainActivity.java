@@ -22,7 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -33,7 +32,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -63,6 +72,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private Spinner spinner;
 
     private boolean locked;
+
+    private Polyline currentRoute;
+
+    private CurrentLocationListener currentLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +119,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         toiletManager = new ToiletManager();
         localToilets = new DataHandler(getApplicationContext());
+        currentLocationListener = new CurrentLocationListener(this);
 
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -373,12 +387,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double lngDest = currentMarker.getPosition().longitude;
 
         //own location
+        double latCur = currentLocationListener.getCurrentLocation().latitude;
+        double lngCur = currentLocationListener.getCurrentLocation().longitude;
 
         String directionsKey = getString(R.string.google_directions_key);
 
 
         //load json
         //https://maps.googleapis.com/maps/api/directions/json?origin=myLoc&destination=latDest, lngDest&key=directionsKey&mode=walking
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + latCur + ", " + lngCur + "&destination=" + latDest + ", "+ lngDest + "&key=" + directionsKey + "&mode=walking";
+
+        JsonObject route = getJsonFromUrl(url);
 
         //draw polylines
 
@@ -388,6 +407,46 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .width(5)
                 .color(Color.BLUE));
         */
+
+        try {
+            JsonArray steps = route.getAsJsonObject("routes").getAsJsonObject("legs").getAsJsonArray("steps");
+
+            PolylineOptions polyOpt = new PolylineOptions();
+
+            for(int i = 0; i < steps.size(); i++){
+                polyOpt.add(new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("start_location").getAsJsonObject("lat").getAsDouble(),
+                        steps.get(i).getAsJsonObject().getAsJsonObject("start_location").getAsJsonObject("lat").getAsDouble()),
+                        new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("end_location").getAsJsonObject("lat").getAsDouble(),
+                                steps.get(i).getAsJsonObject().getAsJsonObject("end_location").getAsJsonObject("lat").getAsDouble()));
+            }
+
+            polyOpt.width(3);
+            polyOpt.color(getResources().getColor(R.color.color2));
+
+            currentRoute = map.addPolyline(polyOpt);
+
+        }catch(NullPointerException e){
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private JsonObject getJsonFromUrl(String urlString){
+        try {
+            // Connect to the URL using java's native library
+            URL url = new URL(urlString);
+            URLConnection request = url.openConnection();
+            request.connect();
+
+            // Convert to a JSON object to print data
+            JsonParser jp = new JsonParser(); //from gson
+            JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
+            JsonObject rootobj = root.getAsJsonObject(); //May be an array, may be an object.
+            return rootobj;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void loadDatabaseToilet(DatabaseToilet dbT){
