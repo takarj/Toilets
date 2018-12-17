@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -22,14 +24,17 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonArray;
@@ -42,6 +47,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import de.wdgpocking.lorenz.toilets.Database.DataHandler;
@@ -73,7 +80,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Polyline currentRoute;
 
-    private CurrentLocationListener currentLocationListener;
+    private LatLng currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +124,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         toiletManager = new ToiletManager();
         localToilets = new DataHandler(getApplicationContext());
-        currentLocationListener = new CurrentLocationListener(this);
 
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -226,6 +232,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_PERMISSION);
             }
         }
+
+        GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            }
+        };
+
+        map.setOnMyLocationChangeListener(myLocationChangeListener);
 
         map.setOnMapLongClickListener(onMapLongClickListener);
         map.setOnMarkerClickListener(onMarkerClickListener);
@@ -385,8 +400,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double lngDest = currentMarker.getPosition().longitude;
 
         //own location
-        double latCur = currentLocationListener.getCurrentLocation().latitude;
-        double lngCur = currentLocationListener.getCurrentLocation().longitude;
+        double latCur = currentLocation.latitude;
+        double lngCur = currentLocation.longitude;
 
         String directionsKey = getString(R.string.google_directions_key);
 
@@ -395,38 +410,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //https://maps.googleapis.com/maps/api/directions/json?origin=myLoc&destination=latDest, lngDest&key=directionsKey&mode=walking
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + latCur + ", " + lngCur + "&destination=" + latDest + ", "+ lngDest + "&key=" + directionsKey + "&mode=walking";
 
-        JsonObject route = getJsonFromUrl(url);
-
-        //draw polylines
-
-        /*
-        Polyline line = map.addPolyline(new PolylineOptions()
-                .add(new LatLng(51.5, -0.1), new LatLng(40.7, -74.0))
-                .width(5)
-                .color(Color.BLUE));
-        */
-
-        try {
-            JsonArray steps = route.getAsJsonObject("routes").getAsJsonObject("legs").getAsJsonArray("steps");
-
-            PolylineOptions polyOpt = new PolylineOptions();
-
-            for(int i = 0; i < steps.size(); i++){
-                polyOpt.add(new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("start_location").getAsJsonObject("lat").getAsDouble(),
-                        steps.get(i).getAsJsonObject().getAsJsonObject("start_location").getAsJsonObject("lat").getAsDouble()),
-                        new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("end_location").getAsJsonObject("lat").getAsDouble(),
-                                steps.get(i).getAsJsonObject().getAsJsonObject("end_location").getAsJsonObject("lat").getAsDouble()));
-            }
-
-            polyOpt.width(3);
-            polyOpt.color(getResources().getColor(R.color.color2));
-
-            currentRoute = map.addPolyline(polyOpt);
-
-        }catch(NullPointerException e){
-            e.printStackTrace();
-            return;
-        }
+        new AsyncRoute().execute(url);
     }
 
     private JsonObject getJsonFromUrl(String urlString){
@@ -503,6 +487,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (view != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private class AsyncRoute extends AsyncTask<String, Integer, Long>{
+
+        private JsonObject routeJson;
+
+        @Override
+        protected Long doInBackground(String... strings) {
+            routeJson = getJsonFromUrl(strings[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+            try {
+                JsonArray steps = routeJson.getAsJsonArray("routes").get(0).getAsJsonObject().getAsJsonArray("legs").get(0).getAsJsonObject().getAsJsonArray("steps");
+
+                PolylineOptions polyOpt = new PolylineOptions();
+
+                for(int i = 0; i < steps.size(); i++){
+                    polyOpt.add(new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("start_location").get("lat").getAsDouble(),
+                                    steps.get(i).getAsJsonObject().getAsJsonObject("start_location").get("lng").getAsDouble()),
+                            new LatLng(steps.get(i).getAsJsonObject().getAsJsonObject("end_location").get("lat").getAsDouble(),
+                                    steps.get(i).getAsJsonObject().getAsJsonObject("end_location").get("lng").getAsDouble()));
+                }
+
+                polyOpt.width(5);
+                polyOpt.jointType(JointType.ROUND);
+                polyOpt.color(getResources().getColor(R.color.color2));
+
+                currentRoute = map.addPolyline(polyOpt);
+
+            }catch(NullPointerException e){
+                e.printStackTrace();
+                return;
+            }
         }
     }
 }
