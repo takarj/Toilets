@@ -504,6 +504,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
             try {
+                if(routeJson.getAsJsonArray("routes").size() == 0){
+                    return;
+                }
                 JsonArray steps = routeJson.getAsJsonArray("routes").get(0).getAsJsonObject().getAsJsonArray("legs").get(0).getAsJsonObject().getAsJsonArray("steps");
 
                 PolylineOptions polyOpt = new PolylineOptions();
