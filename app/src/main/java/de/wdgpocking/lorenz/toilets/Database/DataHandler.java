@@ -62,23 +62,35 @@ public class DataHandler {
                 dbT.getTitle(),
                 dbT.getLatlng().latitude,
                 dbT.getLatlng().longitude,
-                (dbT.getDescription().length() > 0) ? "'" + dbT.getDescription() + "'" : "' '",
-                dbT.getRating(),
-                dbT.getPrice(),
-                dbT.getCurrency());
-                */
-
-        String input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
-                dbT.getID(),
-                dbT.getTitle(),
-                dbT.getLatlng().latitude,
-                dbT.getLatlng().longitude,
                 (dbT.getDescription().length() > 0) ? "'" + dbT.getDescription() + "'" : null,
                 dbT.getRating(),
                 dbT.getPrice(),
                 dbT.getCurrency());
+*/
+        String input;
 
         //new insert if description empty
+        if(dbT.getDescription().length() == 0) {
+            input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %f, %f, '%c'",
+                    dbT.getID(),
+                    dbT.getTitle(),
+                    dbT.getLatlng().latitude,
+                    dbT.getLatlng().longitude,
+                    dbT.getRating(),
+                    dbT.getPrice(),
+                    dbT.getCurrency());
+            db.execSQL("insert or replace into " + TABLE_NAME + "(ID, title, lat, lng, rating, price, currency) VALUES (" + input + ");");
+        }
+
+        input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
+                dbT.getID(),
+                dbT.getTitle(),
+                dbT.getLatlng().latitude,
+                dbT.getLatlng().longitude,
+                dbT.getDescription(),
+                dbT.getRating(),
+                dbT.getPrice(),
+                dbT.getCurrency());
 
         db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
