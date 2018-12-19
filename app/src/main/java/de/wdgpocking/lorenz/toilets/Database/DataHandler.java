@@ -128,7 +128,7 @@ public class DataHandler {
         @Override
         public void onCreate(SQLiteDatabase db){
             db.execSQL("create table if not exists toiletsTable(" +
-                    "ID int unique, " +
+                    "ID int unique primary key, " +
                     "title text not null, " +
                     "lat double not null, " +
                     "lng double not null, " +
