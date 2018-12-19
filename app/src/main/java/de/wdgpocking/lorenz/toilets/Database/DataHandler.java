@@ -67,6 +67,8 @@ public class DataHandler {
                 dbT.getPrice(),
                 dbT.getCurrency());
 
+        //new insert if description empty
+
         db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
         close();
