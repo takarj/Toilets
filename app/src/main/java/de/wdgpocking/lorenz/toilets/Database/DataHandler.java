@@ -57,12 +57,23 @@ public class DataHandler {
                 dbT.getRating(),
                 dbT.getPrice()));*/
 
-        String input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
+        /*String input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
                 dbT.getID(),
                 dbT.getTitle(),
                 dbT.getLatlng().latitude,
                 dbT.getLatlng().longitude,
                 (dbT.getDescription().length() > 0) ? "'" + dbT.getDescription() + "'" : "' '",
+                dbT.getRating(),
+                dbT.getPrice(),
+                dbT.getCurrency());
+                */
+
+        String input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
+                dbT.getID(),
+                dbT.getTitle(),
+                dbT.getLatlng().latitude,
+                dbT.getLatlng().longitude,
+                (dbT.getDescription().length() > 0) ? "'" + dbT.getDescription() + "'" : null,
                 dbT.getRating(),
                 dbT.getPrice(),
                 dbT.getCurrency());
