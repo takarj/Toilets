@@ -80,19 +80,19 @@ public class DataHandler {
                     dbT.getPrice(),
                     dbT.getCurrency());
             db.execSQL("insert or replace into " + TABLE_NAME + "(ID, title, lat, lng, rating, price, currency) VALUES (" + input + ");");
+        }else {
+            input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
+                    dbT.getID(),
+                    dbT.getTitle(),
+                    dbT.getLatlng().latitude,
+                    dbT.getLatlng().longitude,
+                    dbT.getDescription(),
+                    dbT.getRating(),
+                    dbT.getPrice(),
+                    dbT.getCurrency());
+
+            db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
         }
-
-        input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %s, %f, %f, '%c'",
-                dbT.getID(),
-                dbT.getTitle(),
-                dbT.getLatlng().latitude,
-                dbT.getLatlng().longitude,
-                dbT.getDescription(),
-                dbT.getRating(),
-                dbT.getPrice(),
-                dbT.getCurrency());
-
-        db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
         close();
     }
