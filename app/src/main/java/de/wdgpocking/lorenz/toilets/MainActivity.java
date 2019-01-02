@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.inputmethod.InputMethodManager;
@@ -573,6 +574,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private class AsyncGetToilets extends AsyncTask<String, Integer, Long>{
+        IOException exception;
         @Override
         protected Long doInBackground(String... strings) {
             try {
@@ -606,17 +608,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 socket.close();
-            }catch(IOException e){}
+            }catch(IOException e){
+                exception = e;
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
+            Log.e("IOEXception", exception.getMessage());
         }
     }
 
     private class AsyncUploadToilet extends AsyncTask<String, Integer, Long>{
+        IOException exception;
         @Override
         protected Long doInBackground(String... strings) {
             try {
@@ -637,13 +643,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         + "?val%" + tInfo.getPrice()
                         + "?val%" + tInfo.getCurrency());
                 socket.close();
-            }catch(IOException e){}
+            }catch(IOException e){
+                exception = e;
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
+            Log.e("IOEXception", exception.getMessage());
         }
     }
 }
