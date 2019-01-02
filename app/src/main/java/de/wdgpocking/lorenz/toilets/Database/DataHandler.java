@@ -70,7 +70,7 @@ public class DataHandler {
         String input;
 
         //new insert if description empty
-        if(dbT.getDescription().length() == 0) {
+/*        if(dbT.getDescription().length() == 0) {
             input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, %f, %f, '%c'",
                     dbT.getID(),
                     dbT.getTitle(),
@@ -92,7 +92,21 @@ public class DataHandler {
                     dbT.getCurrency());
 
             db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
-        }
+        }*/
+
+
+        //works now, don't know why
+        input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, '%s', %f, %f, '%c'",
+                dbT.getID(),
+                dbT.getTitle(),
+                dbT.getLatlng().latitude,
+                dbT.getLatlng().longitude,
+                dbT.getDescription(),
+                dbT.getRating(),
+                dbT.getPrice(),
+                dbT.getCurrency());
+
+        db.execSQL("insert or replace into " + TABLE_NAME + " VALUES (" + input + ");");
 
         close();
     }
@@ -155,7 +169,7 @@ public class DataHandler {
                     "title text not null, " +
                     "lat double not null, " +
                     "lng double not null, " +
-                    "description text, " +
+                    "description text not null, " +
                     "rating float not null, " +
                     "price float not null, "+
                     "currency text not null);");

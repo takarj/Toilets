@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
@@ -42,14 +44,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import de.wdgpocking.lorenz.toilets.Database.DataHandler;
 import de.wdgpocking.lorenz.toilets.Database.DatabaseToilet;
@@ -81,6 +89,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private Polyline currentRoute;
 
     private LatLng currentLocation;
+
+    private static final int PORT = 9991;
+    private static final String HOST = "192.168.2.109";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,18 +152,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                  */
                 //TODO
 
-                MarkerOptions mOpt = new MarkerOptions()
-                        .position(latLng)
-                        .title("Custom Toilet")
-                        .icon(getToiletMarkerBitmap());
-                Marker marker = map.addMarker(mOpt);
-                ToiletInfo tInfo = new ToiletInfo()
-                        .rating(5f)
-                        .description("")
-                        .price(0f)
-                        .setID(generateID());
-
-                toiletManager.addToilet(marker, tInfo);
+                createNewToilet("CustomToilet", latLng, "", 5f, 0f);
 
                 //showToiletInfo(marker);
             }
@@ -265,6 +265,35 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void findToiletsInRange(View v){
+        //TODO
+        new AsyncGetToilets().execute();
+    }
+
+    public void uploadToilet(View v){
+        //TODO
+        if(currentMarker == null){
+            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+        }else{
+            new AsyncUploadToilet().execute();
+        }
+    }
+
+    public void createNewToilet(String title, LatLng latLng, String description, float rating, float price){
+        MarkerOptions mOpt = new MarkerOptions()
+                .position(latLng)
+                .title(title)
+                .icon(getToiletMarkerBitmap());
+        Marker marker = map.addMarker(mOpt);
+        ToiletInfo tInfo = new ToiletInfo()
+                .rating(rating)
+                .description(description)
+                .price(price)
+                .setID(generateID());
+
+        toiletManager.addToilet(marker, tInfo);
+    }
+
     private void showToiletInfo(Marker m){
         //LOAD ToiletInfo corresponding to Marker
         ToiletInfo tInfo = toiletManager.getToiletInfo(m);
@@ -286,18 +315,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void deleteCurrent(View v){
         if(currentMarker == null){
-            //Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
         }else{
             //pop-up window "really wanna delete? lol"
             localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
             toiletManager.removeToilet(currentMarker);
             currentMarker.remove();
+            Toast.makeText(getApplicationContext(), "Toilet deleted", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void saveCurrentToDatabase(View v){
         if(currentMarker == null){
-            //Toast.makeText(getApplicationContext(), "please select a toilet", Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
         }else{
             ToiletInfo toiletInfo = toiletManager.getToiletInfo(currentMarker);
             localToilets.addToilet(new DatabaseToilet()
@@ -309,6 +339,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     .setPrice(toiletInfo.getPrice())
                     .setCurrency(toiletInfo.getCurrency())
             );
+            Toast.makeText(getApplicationContext(), "Toilet saved", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -490,6 +521,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private double[] getBounds(){
+        double[] bounds = new double[4];
+        LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+        bounds[0] = latLngBounds.southwest.latitude;
+        bounds[1] = latLngBounds.northeast.latitude;
+        bounds[2] = latLngBounds.southwest.longitude;
+        bounds[3] = latLngBounds.northeast.longitude;
+        return bounds;
+    }
+
     private class AsyncRoute extends AsyncTask<String, Integer, Long>{
 
         private JsonObject routeJson;
@@ -528,6 +569,81 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
                 return;
             }
+        }
+    }
+
+    private class AsyncGetToilets extends AsyncTask<String, Integer, Long>{
+        @Override
+        protected Long doInBackground(String... strings) {
+            try {
+                Socket socket = new Socket(HOST, PORT);
+
+                InputStream inputToClient = socket.getInputStream();
+                OutputStream outputFromClient = socket.getOutputStream();
+
+                Scanner scanner = new Scanner(inputToClient, "UTF-8");
+                PrintWriter clientPrintOut = new PrintWriter(new OutputStreamWriter(outputFromClient, "UTF-8"), true);
+
+                double[] bounds = getBounds();
+
+                clientPrintOut.println("getToilets"
+                    + "?val%" + bounds[0]
+                    + "?val%" + bounds[1]
+                    + "?val%" + bounds[2]
+                    + "?val%" + bounds[3]);
+                while(scanner.hasNextLine()){
+                    String line = scanner.nextLine();
+                    if(line.equals("done")){
+                        socket.close();
+                    }
+                    if(line.startsWith("toilet")){
+                        String[] params = line.split("\\?val%");
+                        createNewToilet(params[1],
+                                new LatLng(Double.parseDouble(params[2]), Double.parseDouble(params[3])),
+                                params[4],
+                                Float.parseFloat(params[5]),
+                                Float.parseFloat(params[6]));
+                    }
+                }
+                socket.close();
+            }catch(IOException e){}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+        }
+    }
+
+    private class AsyncUploadToilet extends AsyncTask<String, Integer, Long>{
+        @Override
+        protected Long doInBackground(String... strings) {
+            try {
+                Socket socket = new Socket(HOST, PORT);
+
+                OutputStream outputFromClient = socket.getOutputStream();
+
+                PrintWriter clientPrintOut = new PrintWriter(new OutputStreamWriter(outputFromClient, "UTF-8"), true);
+
+                ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
+
+                clientPrintOut.println("submit"
+                        + "?val%" + currentMarker.getTitle()
+                        + "?val%" + currentMarker.getPosition().latitude
+                        + "?val%" + currentMarker.getPosition().latitude
+                        + "?val%" + tInfo.getDescription()
+                        + "?val%" + tInfo.getRating()
+                        + "?val%" + tInfo.getPrice()
+                        + "?val%" + tInfo.getCurrency());
+                socket.close();
+            }catch(IOException e){}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
         }
     }
 }

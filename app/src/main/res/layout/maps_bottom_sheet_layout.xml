@@ -29,6 +29,17 @@
                     android:layout_height="match_parent"
                     />
 
+                <ImageButton
+                    android:id="@+id/findToiletsBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/ic_bg"
+                    android:onClick="findToiletsInRange"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@android:drawable/ic_menu_search" />
+
             </android.support.design.widget.CoordinatorLayout>
 
         </FrameLayout>
