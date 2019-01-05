@@ -19,8 +19,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_upload.png" />
-                                      <entry key="outputName" value="ic_upload" />
+                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_search.png" />
+                                      <entry key="outputName" value="ic_search" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="d81159" />
                                     </map>

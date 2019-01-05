@@ -76,6 +76,23 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
+            <ImageButton
+                android:id="@+id/imageButton4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:onClick="findToiletsInRange"
+                android:padding="5dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_search" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
         </LinearLayout>
 
         <LinearLayout
