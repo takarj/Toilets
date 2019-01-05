@@ -95,7 +95,7 @@ public class DataHandler {
         }*/
 
 
-        //works now, don't know why, not really :(
+        //works now, don't know why, not really :(,  !!! only works if toilet info was shown in expanded bottom sheet
         input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, '%s', %f, %f, '%c'",
                 dbT.getID(),
                 dbT.getTitle(),
