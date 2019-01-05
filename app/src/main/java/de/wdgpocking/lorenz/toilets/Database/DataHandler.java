@@ -95,7 +95,7 @@ public class DataHandler {
         }*/
 
 
-        //works now, don't know why
+        //works now, don't know why, not really :(
         input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, '%s', %f, %f, '%c'",
                 dbT.getID(),
                 dbT.getTitle(),

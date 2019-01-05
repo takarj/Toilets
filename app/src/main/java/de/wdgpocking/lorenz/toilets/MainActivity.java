@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -65,34 +66,26 @@ import de.wdgpocking.lorenz.toilets.Database.DatabaseToilet;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback{
 
-    private GoogleMap map;
     protected static final int MY_LOCATION_PERMISSION = 1;
+    private static final int PORT = 9991;
+    private static final String HOST = "192.168.2.109";
+    private GoogleMap map;
     private BottomSheetBehavior sheetBehavior;
     private int PEEK_HEIGHT_COLLAPSED;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener;
     private BottomSheetBehavior.BottomSheetCallback bottomSheetCallback;
-
     private Marker currentMarker;
-
     private DataHandler localToilets;
-
     private ToiletManager toiletManager;
-
     private EditText nameTxt;
     private EditText descriptionTxt;
     private EditText priceTxt;
     private ImageButton editButton;
     private Spinner spinner;
-
     private boolean locked;
-
     private Polyline currentRoute;
-
     private LatLng currentLocation;
-
-    private static final int PORT = 9991;
-    private static final String HOST = "192.168.2.109";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +98,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        PEEK_HEIGHT_COLLAPSED = dpToPx(50);
+        float peekHeight = getResources().getDimension(R.dimen.peekHeight) / 2;
+
+        PEEK_HEIGHT_COLLAPSED = dpToPx(peekHeight);
 
         //move MyLocationButton to bottom-right
         View mapView = mapFragment.getView();
@@ -121,7 +116,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // position on right bottom
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams.setMargins(0, 0, 30, 120);
+            layoutParams.setMargins(0, 0, 30, 140);
 
 
             View compassButton = ((View) mapView.findViewById(1).getParent()).findViewById(5);      //move compassButton
@@ -131,7 +126,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             // position on left bottom  as compass button is in left column
             layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams2.setMargins(30, 0, 0, 120);
+            layoutParams2.setMargins(30, 0, 0, 140);
         }
 
         toiletManager = new ToiletManager();
@@ -216,8 +211,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -268,7 +262,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void findToiletsInRange(View v){
         //TODO
-        new AsyncGetToilets().execute();
+        new AsyncGetToilets().execute(getBounds());
     }
 
     public void uploadToilet(View v){
@@ -276,11 +270,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(currentMarker == null){
             Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
         }else{
-            new AsyncUploadToilet().execute();
+            ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
+            String[] params = new String[7];
+            params[0] = currentMarker.getTitle();
+            params[1] = String.valueOf(currentMarker.getPosition().latitude);
+            params[2] = String.valueOf(currentMarker.getPosition().latitude);
+            params[3] = tInfo.getDescription();
+            params[4] = String.valueOf(tInfo.getRating());
+            params[5] = String.valueOf(tInfo.getPrice());
+            params[6] = String.valueOf(tInfo.getCurrency());
+            new AsyncUploadToilet().execute(params);
         }
     }
 
     public void createNewToilet(String title, LatLng latLng, String description, float rating, float price){
+        toiletManager.removeIfExists(latLng.latitude, latLng.longitude);
+
         MarkerOptions mOpt = new MarkerOptions()
                 .position(latLng)
                 .title(title)
@@ -508,7 +513,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return BitmapDescriptorFactory.fromBitmap(marker);
     }
 
-    private int dpToPx(int dp) {
+    private int dpToPx(float dp) {
         DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
@@ -522,13 +527,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private double[] getBounds(){
-        double[] bounds = new double[4];
-        LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
-        bounds[0] = latLngBounds.southwest.latitude;
-        bounds[1] = latLngBounds.northeast.latitude;
-        bounds[2] = latLngBounds.southwest.longitude;
-        bounds[3] = latLngBounds.northeast.longitude;
+    private String[] getBounds(){
+        String[] bounds = new String[4];
+        VisibleRegion vR = map.getProjection().getVisibleRegion();
+        bounds[0] = String.valueOf(vR.latLngBounds.southwest.latitude);
+        bounds[1] = String.valueOf(vR.latLngBounds.northeast.latitude);
+        bounds[2] = String.valueOf(vR.latLngBounds.southwest.longitude);
+        bounds[3] = String.valueOf(vR.latLngBounds.northeast.longitude);
         return bounds;
     }
 
@@ -575,6 +580,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private class AsyncGetToilets extends AsyncTask<String, Integer, Long>{
         IOException exception;
+        ArrayList<String[]> toilets;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            toilets = new ArrayList<>();
+        }
+
         @Override
         protected Long doInBackground(String... strings) {
             try {
@@ -586,13 +599,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Scanner scanner = new Scanner(inputToClient, "UTF-8");
                 PrintWriter clientPrintOut = new PrintWriter(new OutputStreamWriter(outputFromClient, "UTF-8"), true);
 
-                double[] bounds = getBounds();
-
                 clientPrintOut.println("getToilets"
-                    + "?val%" + bounds[0]
-                    + "?val%" + bounds[1]
-                    + "?val%" + bounds[2]
-                    + "?val%" + bounds[3]);
+                    + "?val%" + strings[0]
+                    + "?val%" + strings[1]
+                    + "?val%" + strings[2]
+                    + "?val%" + strings[3]);
                 while(scanner.hasNextLine()){
                     String line = scanner.nextLine();
                     if(line.equals("done")){
@@ -600,11 +611,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     if(line.startsWith("toilet")){
                         String[] params = line.split("\\?val%");
-                        createNewToilet(params[1],
-                                new LatLng(Double.parseDouble(params[2]), Double.parseDouble(params[3])),
-                                params[4],
-                                Float.parseFloat(params[5]),
-                                Float.parseFloat(params[6]));
+                        toilets.add(params);
                     }
                 }
                 socket.close();
@@ -617,7 +624,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
-            Log.e("IOEXception", exception.getMessage());
+            if(exception != null) {
+                Log.e("IOEXception", exception.getMessage());
+                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }else {
+                for (String[] params : toilets) {
+                    createNewToilet(params[1],
+                            new LatLng(Double.parseDouble(params[2]), Double.parseDouble(params[3])),
+                            params[4],
+                            Float.parseFloat(params[5]),
+                            Float.parseFloat(params[6]));
+                }
+                Toast.makeText(getApplicationContext(), "Toilets received: " + toilets.size(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -632,16 +651,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 PrintWriter clientPrintOut = new PrintWriter(new OutputStreamWriter(outputFromClient, "UTF-8"), true);
 
-                ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
-
-                clientPrintOut.println("submit"
+/*                clientPrintOut.println("submit"
                         + "?val%" + currentMarker.getTitle()
                         + "?val%" + currentMarker.getPosition().latitude
                         + "?val%" + currentMarker.getPosition().latitude
                         + "?val%" + tInfo.getDescription()
                         + "?val%" + tInfo.getRating()
                         + "?val%" + tInfo.getPrice()
-                        + "?val%" + tInfo.getCurrency());
+                        + "?val%" + tInfo.getCurrency());*/
+                clientPrintOut.println("submit"
+                        + "?val%" + strings[0]
+                        + "?val%" + strings[1]
+                        + "?val%" + strings[2]
+                        + "?val%" + strings[3]
+                        + "?val%" + strings[4]
+                        + "?val%" + strings[5]
+                        + "?val%" + strings[6]);
                 socket.close();
             }catch(IOException e){
                 exception = e;
@@ -652,7 +677,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
-            Log.e("IOEXception", exception.getMessage());
+            if(exception != null) {
+                Log.e("IOEXception", exception.getMessage());
+                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getApplicationContext(), "Toilet submitted", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

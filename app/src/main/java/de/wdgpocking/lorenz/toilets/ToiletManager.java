@@ -1,8 +1,6 @@
 package de.wdgpocking.lorenz.toilets;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +28,15 @@ public class ToiletManager {
             }
         }
         return false;
+    }
+
+    public void removeIfExists(double lat, double lng){
+        for(Marker m : toilets.keySet()){
+            if(m.getPosition().latitude == lat && m.getPosition().longitude == lng){
+                removeToilet(m);
+                return;
+            }
+        }
     }
 
     public ToiletInfo getToiletInfo(Marker marker){

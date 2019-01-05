@@ -19,10 +19,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_bg.png" />
-                                      <entry key="outputName" value="ic_bg" />
+                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_upload.png" />
+                                      <entry key="outputName" value="ic_upload" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="73d2de" />
+                                      <entry key="themeColor" value="d81159" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -41,11 +41,24 @@
                                 </PersistentState>
                               </value>
                             </entry>
+                            <entry key="notification">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="G:\Pictures\vektor\Toilets App Icons\ic_upload.png" />
+                                      <entry key="outputName" value="ic_upload" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
                           </map>
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="LAUNCHER_LEGACY" />
+                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
