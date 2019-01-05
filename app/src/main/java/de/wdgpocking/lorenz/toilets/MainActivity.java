@@ -87,6 +87,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean locked;
     private Polyline currentRoute;
     private LatLng currentLocation;
+    private float lastOffset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +134,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         toiletManager = new ToiletManager();
         localToilets = new DataHandler(getApplicationContext());
 
+        lastOffset = 0;
+
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -175,11 +178,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         bottomSheetCallback = new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
+                if((newState == BottomSheetBehavior.STATE_DRAGGING || newState == BottomSheetBehavior.STATE_EXPANDED) && currentMarker == null){
+                    Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+                    BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
                 saveInput();
                 lockInput();
                 hideKeyboard();
@@ -338,6 +345,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             toiletManager.removeToilet(currentMarker);
             currentMarker = null;
             clearBottomSheet();
+            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             Toast.makeText(getApplicationContext(), "Toilet deleted", Toast.LENGTH_SHORT).show();
         }
     }
@@ -453,6 +461,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showRoute(View v){
         if(currentMarker == null){
+            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
             return;
         }
 
