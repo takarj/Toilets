@@ -402,6 +402,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void allowInput(){
+        if(currentMarker == null){
+            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         locked = false;
 
         nameTxt.setFocusableInTouchMode(true);
