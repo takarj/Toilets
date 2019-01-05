@@ -73,6 +73,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private BottomSheetBehavior sheetBehavior;
     private int PEEK_HEIGHT_COLLAPSED;
     private GoogleMap.OnMapLongClickListener onMapLongClickListener;
+    private GoogleMap.OnMapClickListener onMapClickListener;
     private GoogleMap.OnMarkerClickListener onMarkerClickListener;
     private BottomSheetBehavior.BottomSheetCallback bottomSheetCallback;
     private Marker currentMarker;
@@ -151,6 +152,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 createNewToilet("CustomToilet", latLng, "", 5f, 0f);
 
                 //showToiletInfo(marker);
+            }
+        };
+
+        onMapClickListener = new GoogleMap.OnMapClickListener(){
+            @Override
+            public void onMapClick(LatLng latLng) {
+                currentMarker = null;
+                clearBottomSheet();
             }
         };
 
@@ -239,6 +248,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         map.setOnMapLongClickListener(onMapLongClickListener);
         map.setOnMarkerClickListener(onMarkerClickListener);
+        map.setOnMapClickListener(onMapClickListener);
 
         loadAllToiletsFromDB();
     }
