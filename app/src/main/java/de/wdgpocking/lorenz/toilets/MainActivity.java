@@ -274,7 +274,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             String[] params = new String[7];
             params[0] = currentMarker.getTitle();
             params[1] = String.valueOf(currentMarker.getPosition().latitude);
-            params[2] = String.valueOf(currentMarker.getPosition().latitude);
+            params[2] = String.valueOf(currentMarker.getPosition().longitude);
             params[3] = tInfo.getDescription();
             params[4] = String.valueOf(tInfo.getRating());
             params[5] = String.valueOf(tInfo.getPrice());
@@ -326,9 +326,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             //pop-up window "really wanna delete? lol"
             localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
             toiletManager.removeToilet(currentMarker);
-            currentMarker.remove();
+            currentMarker = null;
+            clearBottomSheet();
             Toast.makeText(getApplicationContext(), "Toilet deleted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void clearBottomSheet(){
+        nameTxt.setText("");
+        descriptionTxt.setText("");
+        priceTxt.setText("0.0");
+        spinner.setSelection(0);
     }
 
     public void saveCurrentToDatabase(View v){
