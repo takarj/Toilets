@@ -88,7 +88,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean locked;
     private Polyline currentRoute;
     private LatLng currentLocation;
-    private float lastOffset;
+    private Toast currentToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +135,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         toiletManager = new ToiletManager();
         localToilets = new DataHandler(getApplicationContext());
 
-        lastOffset = 0;
-
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         sheetBehavior = BottomSheetBehavior.from(bottomSheet);
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -180,7 +178,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if((newState == BottomSheetBehavior.STATE_DRAGGING || newState == BottomSheetBehavior.STATE_EXPANDED) && currentMarker == null){
-                    Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+                    showToast("Please select a toilet");
                     BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
@@ -288,6 +286,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Use this method to show Toasts to the user in order to clean up recent Toasts
+     * @param message
+     */
+    public void showToast(String message){
+        if(currentToast != null){
+            currentToast.cancel();
+        }
+        currentToast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        currentToast.show();
+    }
+
     public void findToiletsInRange(View v){
         //TODO
         new AsyncGetToilets().execute(getBounds());
@@ -296,7 +306,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void uploadToilet(View v){
         //TODO
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            showToast("Please select a toilet");
         }else{
             saveInput();
             ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
@@ -350,7 +360,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void deleteCurrent(View v){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            showToast("Please select a toilet");
         }else{
             //pop-up window "really wanna delete? lol"
             localToilets.deleteToiletByID(toiletManager.getToiletInfo(currentMarker).getID());
@@ -358,7 +368,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             currentMarker = null;
             clearBottomSheet();
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            Toast.makeText(getApplicationContext(), "Toilet deleted", Toast.LENGTH_SHORT).show();
+            showToast("Toilet deleted");
         }
     }
 
@@ -371,7 +381,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void saveCurrentToDatabase(View v){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            showToast("Please select a toilet");
         }else{
             saveInput();
             ToiletInfo toiletInfo = toiletManager.getToiletInfo(currentMarker);
@@ -384,7 +394,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     .setPrice(toiletInfo.getPrice())
                     .setCurrency(toiletInfo.getCurrency())
             );
-            Toast.makeText(getApplicationContext(), "Toilet saved", Toast.LENGTH_SHORT).show();
+            showToast("Toilet saved");
         }
     }
 
@@ -434,7 +444,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void allowInput(){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            showToast("Please select a toilet");
             return;
         }
 
@@ -474,7 +484,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void showRoute(View v){
         if(currentMarker == null){
-            Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
+            showToast("Please select a toilet");
             return;
         }
 
@@ -675,7 +685,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             super.onPostExecute(aLong);
             if(exception != null) {
                 Log.e("IOEXception", exception.getMessage());
-                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                showToast(exception.toString());
             }else {
                 for (String[] params : toilets) {
                     createNewToilet(params[1],
@@ -684,7 +694,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             Float.parseFloat(params[5]),
                             Float.parseFloat(params[6]));
                 }
-                Toast.makeText(getApplicationContext(), "Toilets received: " + toilets.size(), Toast.LENGTH_SHORT).show();
+                showToast("Toilets received: " + toilets.size());
             }
         }
     }
@@ -728,9 +738,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             super.onPostExecute(aLong);
             if(exception != null) {
                 Log.e("IOEXception", exception.getMessage());
-                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                showToast(exception.toString());
             }else{
-                Toast.makeText(getApplicationContext(), "Toilet submitted", Toast.LENGTH_SHORT).show();
+                showToast("Toilet submitted");
             }
         }
     }
