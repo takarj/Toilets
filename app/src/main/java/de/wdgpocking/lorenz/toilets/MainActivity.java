@@ -67,6 +67,7 @@ import de.wdgpocking.lorenz.toilets.Database.DatabaseToilet;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback{
 
     protected static final int MY_LOCATION_PERMISSION = 1;
+    protected static final int INTERNET_PERMISSION = 2;
     private static final int PORT = 9991;
     private static final String HOST = "192.168.2.109";
     private GoogleMap map;
@@ -236,11 +237,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_PERMISSION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, MY_LOCATION_PERMISSION);
+            }
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.INTERNET}, INTERNET_PERMISSION);
             }
         }
 
@@ -266,13 +274,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         switch (requestCode) {
             case MY_LOCATION_PERMISSION:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                            || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         map.setMyLocationEnabled(true);
                     }
                 }else{
                     //Toast.makeText(getApplicationContext(), "We can't help you then", Toast.LENGTH_LONG).show();
                     finish();
                 }
+                break;
+            case INTERNET_PERMISSION:
                 break;
         }
     }
@@ -287,6 +298,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(currentMarker == null){
             Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
         }else{
+            saveInput();
             ToiletInfo tInfo = toiletManager.getToiletInfo(currentMarker);
             String[] params = new String[7];
             params[0] = currentMarker.getTitle();
@@ -361,6 +373,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(currentMarker == null){
             Toast.makeText(getApplicationContext(), "Please select a toilet", Toast.LENGTH_SHORT).show();
         }else{
+            saveInput();
             ToiletInfo toiletInfo = toiletManager.getToiletInfo(currentMarker);
             localToilets.addToilet(new DatabaseToilet()
                     .setID(toiletInfo.getID())
@@ -478,6 +491,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         //load json
         //https://maps.googleapis.com/maps/api/directions/json?origin=myLoc&destination=latDest, lngDest&key=directionsKey&mode=walking
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + latCur + ", " + lngCur + "&destination=" + latDest + ", "+ lngDest + "&key=" + directionsKey + "&mode=walking";
+
+        if(currentRoute != null) {
+            currentRoute.remove();
+        }
 
         new AsyncRoute().execute(url);
     }
