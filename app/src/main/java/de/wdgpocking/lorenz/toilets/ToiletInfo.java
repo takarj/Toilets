@@ -2,6 +2,11 @@ package de.wdgpocking.lorenz.toilets;
 
 public class ToiletInfo {
 
+    /**
+     * Extends usability of Marker bc Marker class cannot be inherited from
+     * therefore must be saved with reference to Marker object see ToiletManager
+     */
+
     private int ID;
 
     private float rating;
@@ -13,6 +18,7 @@ public class ToiletInfo {
     }
 
     /*
+        using builder
         setters return object
         --> multiple setters in a row
      */

@@ -96,6 +96,7 @@ public class DataHandler {
 
 
         //works now, don't know why, not really :(,  !!! only works if toilet info was shown in expanded bottom sheet
+        //ridiculous bug fixed by saving input again to ToiletInfo see method saveInput before saving to local database
         input = String.format(Locale.ENGLISH, "%d, '%s', %f, %f, '%s', %f, %f, '%c'",
                 dbT.getID(),
                 dbT.getTitle(),
@@ -148,6 +149,7 @@ public class DataHandler {
                 .setCurrency(c.getString(7).charAt(0));
     }
 
+    //not needed bc all local toilets already in ram
     public boolean checkID(int id){
         openRead();
         Cursor c = db.rawQuery("select 1 from " +  TABLE_NAME + " where ID =" + id +  ";", null);

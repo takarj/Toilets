@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ToiletManager {
-    private HashMap<Marker, ToiletInfo> toilets;
+    private HashMap<Marker, ToiletInfo> toilets;    //Must save reference to
 
     public ToiletManager(){
         toilets = new HashMap<>();
@@ -30,6 +30,7 @@ public class ToiletManager {
         return false;
     }
 
+    //prevent toilets from being in same spot
     public void removeIfExists(double lat, double lng){
         for(Marker m : toilets.keySet()){
             if(m.getPosition().latitude == lat && m.getPosition().longitude == lng){

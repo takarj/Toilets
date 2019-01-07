@@ -68,8 +68,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected static final int MY_LOCATION_PERMISSION = 1;
     protected static final int INTERNET_PERMISSION = 2;
-    private static final int PORT = 9991;
-    private static final String HOST = "192.168.2.109";
+    private static final int PORT = 9991;   //port of server
+    private static final String HOST = "192.168.2.109"; //server host name
     private GoogleMap map;
     private BottomSheetBehavior sheetBehavior;
     private int PEEK_HEIGHT_COLLAPSED;
@@ -101,7 +101,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        float peekHeight = getResources().getDimension(R.dimen.peekHeight) / 2;
+        float peekHeight = getResources().getDimension(R.dimen.peekHeight) / 2;     //dimen value somehow doubled?!?!
 
         PEEK_HEIGHT_COLLAPSED = dpToPx(peekHeight);
 
@@ -149,7 +149,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                  options to give details to the toilet and submit it
                  should always be saved to local database for later use
                  */
-                //TODO
 
                 createNewToilet("CustomToilet", latLng, "", 5f, 0f);
 
@@ -178,6 +177,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if((newState == BottomSheetBehavior.STATE_DRAGGING || newState == BottomSheetBehavior.STATE_EXPANDED) && currentMarker == null){
+                    //bottomsheet can be dragged up but is pushed down again
                     showToast("Please select a toilet");
                     BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
@@ -288,6 +288,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Use this method to show Toasts to the user in order to clean up recent Toasts
+     * must declare variable currentToast
      * @param message
      */
     public void showToast(String message){
@@ -299,12 +300,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void findToiletsInRange(View v){
-        //TODO
         new AsyncGetToilets().execute(getBounds());
     }
 
     public void uploadToilet(View v){
-        //TODO
         if(currentMarker == null){
             showToast("Please select a toilet");
         }else{
@@ -563,6 +562,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return r.nextInt((max - min) + 1) + min;
     }
 
+
+    //used to resize
     private BitmapDescriptor getToiletMarkerBitmap() {
         int height = 160;
         int width = 80;
@@ -572,6 +573,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return BitmapDescriptorFactory.fromBitmap(marker);
     }
 
+    //determine px of phone screen needed to display amount of dp
     private int dpToPx(float dp) {
         DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
@@ -586,6 +588,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //return lat and lng bounds currently viewed on screen
     private String[] getBounds(){
         String[] bounds = new String[4];
         VisibleRegion vR = map.getProjection().getVisibleRegion();
@@ -602,6 +605,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected Long doInBackground(String... strings) {
+            //gets JSON file from googles api asynchronously bc internet connections mustnt interfere main thread (drawing thread)
             routeJson = getJsonFromUrl(strings[0]);
             return null;
         }
@@ -650,6 +654,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected Long doInBackground(String... strings) {
             try {
+                //Internet connection not in main thread
                 Socket socket = new Socket(HOST, PORT);
 
                 InputStream inputToClient = socket.getInputStream();
@@ -704,6 +709,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected Long doInBackground(String... strings) {
             try {
+                //Internet connection not in main thread
                 Socket socket = new Socket(HOST, PORT);
 
                 OutputStream outputFromClient = socket.getOutputStream();

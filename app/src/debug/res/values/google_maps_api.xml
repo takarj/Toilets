@@ -19,6 +19,9 @@
 
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
+
+
+    Api keys stored in gradle.properties > not uploaded to Github
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/maps_api_key</string>
     <string name="google_directions_key" templateMergeStrategy="preserve" translatable="false">@string/directions_api_key</string>

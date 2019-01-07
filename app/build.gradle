@@ -14,7 +14,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', "MapsApiKey", MapsApiKey
+            buildConfigField 'String', "MapsApiKey", MapsApiKey     //must include gradle file: gradle.properties with api key
             resValue 'string', "maps_api_key", MapsApiKey
             buildConfigField 'String', "DirectionsApiKey", DirectionsApiKey
             resValue 'string', "directions_api_key", DirectionsApiKey
