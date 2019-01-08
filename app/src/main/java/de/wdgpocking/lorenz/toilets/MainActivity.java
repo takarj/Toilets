@@ -211,7 +211,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
             public void onItemSelected(AdapterView<?> parent, View view, int pos,
                                        long id) {
-                ((TextView) view).setTextColor(Color.BLACK);
+                if(view != null) {
+                    ((TextView) view).setTextColor(Color.BLACK);
+                }
             }
             public void onNothingSelected(AdapterView<?> parent) {
             }
